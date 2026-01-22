@@ -13,7 +13,8 @@ import {
 
 import { getStorage } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-// Configuración de Firebase
+// Configuración pública de Firebase. 
+// Protegido por reglas granulares de seguridad de Firestore (ver /firestore.rules)
 const firebaseConfig = {
 	apiKey: "AIzaSyBN7waVUsWH25lfmE7kiX8pzUBqnv_wWUQ",
 	authDomain: "gestion-ordenes-web.firebaseapp.com",
