@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imprimir Orden de Entrega</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/printDelivery.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+  <script type="module" src="js/pages/printDelivery.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="order-content" id="container1">
+      <div class="brandContainer">
+        <img id="businessLogo" class="logo" src="" alt="Logo">
+        <h3 id="businessName">Servicio técnico</h3>
+        <div class="brandDetails">
+          <p><strong>Dirección:</strong> <span id="businessAddress"></span></p>
+          <p><strong>Contacto:</strong> <span id="businessContact"></span></p>
+          <p><strong>Correo:</strong> <span id="businessEmail"></span></p>
+        </div>
+      </div>
+      <div class="order-details">
+        <div class="header-container">
+          <div class="cabecera">
+            <p><span id="orderNumber1" class="orderNumber"></span></p>
+            <div class="client-info">
+              <p><strong>Cliente:</strong> <span id="clientName1"></span></p>
+              <p><strong>DNI:</strong> <span id="clientDNI1"></span></p>
+            </div>
+          </div>
+          <div class="dates">
+            <p><strong>Fecha de egreso: <span id="exitDate1"></span></strong></p>
+            <p><strong>Fecha de ingreso: <span id="entryDate1"></span></strong></p>
+          </div>
+        </div>
+        <div class="equipo">
+          <p><strong>Tipo:</strong> <span id="deviceType1"></span></p>
+          <p><strong>Marca:</strong> <span id="deviceBrand1"></span></p>
+          <p><strong>Serie:</strong> <span id="deviceSerial1"></span></p>
+        </div>
+        <p><strong>Descripción de la Falla:</strong> <span id="faultDescription1"></span></p>
+        <p><strong>Informe de Reparación:</strong> <span id="repairReport1"></span></p>
+        <p class="budget"><strong>Costo de Reparación: $<span id="cost1"></span></strong></p>
+      </div>
+    </div>
+
+    <div class="order-content" id="container2">
+      <div class="order-details">
+        <div class="header-container">
+          <div class="cabecera">
+            <p><span id="orderNumber2" class="orderNumber"></span></p>
+            <div class="client-info">
+              <p><strong>Cliente:</strong> <span id="clientName2"></span></p>
+              <p><strong>DNI:</strong> <span id="clientDNI2"></span></p>
+            </div>
+            <h3>Orden de Entrega</h3>
+          </div>
+          <div class="dates">
+            <p><strong>Fecha de egreso: <span id="exitDate2"></span></strong></p>
+            <p><strong>Fecha de ingreso: <span id="entryDate2"></span></strong></p>
+          </div>
+        </div>
+        <div class="equipo">
+          <p><strong>Tipo:</strong> <span id="deviceType2"></span></p>
+          <p><strong>Marca:</strong> <span id="deviceBrand2"></span></p>
+          <p><strong>Serie:</strong> <span id="deviceSerial2"></span></p>
+        </div>
+        <p><strong>Descripción de la Falla:</strong> <span id="faultDescription2"></span></p>
+        <p><strong>Informe de Reparación:</strong> <span id="repairReport2"></span></p>
+        <p class="budget"><strong>Costo de Reparación: $<span id="cost2"></span></strong></p>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="qr-signature">
+      <div></div>
+      <div class="signature">
+        <div class="signature-line"></div>
+        <p>Equipo entregado</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

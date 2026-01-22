@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Asociar cuenta a un negocio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script type="module" src="js/pages/business-onboarding.js"></script>
+  </head>
+  <body>
+    <div class="container my-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Configuración inicial</h2>
+        <button id="logoutButton" class="btn btn-outline-secondary btn-sm">
+          Cerrar sesión
+        </button>
+      </div>
+
+      <p class="text-muted">
+        Para comenzar a usar el sistema, asociá tu cuenta a un negocio existente
+        o creá uno nuevo.
+      </p>
+
+      <div id="onboardingStatus" class="mb-3 text-info"></div>
+
+      <div class="row">
+        <!-- Crear negocio -->
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header">Crear un nuevo negocio</div>
+            <div class="card-body">
+              <p class="text-muted">
+                Usá esta opción si sos el dueño o responsable del sistema y
+                querés dar de alta un negocio nuevo (incluye prueba de 7 días).
+              </p>
+              <form id="createBusinessForm">
+                <div class="form-group">
+                  <label for="newBusinessName">Nombre del negocio</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="newBusinessName"
+                    placeholder="Ej: Mi Servicio Técnico"
+                    required />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Crear negocio
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unirse a negocio existente -->
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header">Unirme a un negocio existente</div>
+            <div class="card-body">
+              <p class="text-muted">
+                Usá esta opción si tu negocio ya está registrado y te
+                compartieron
+                una clave de acceso.
+              </p>
+              <form id="joinBusinessForm">
+                <div class="form-group">
+                  <label for="joinCode">Clave de negocio</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="joinCode"
+                    placeholder="Ingresá la clave que te compartieron"
+                    required />
+                  <small class="form-text text-muted">
+                    La clave la genera el administrador del sistema, puedes mandar un mensaje para solicitar acceso.
+                    El sistema detectará automáticamente si la clave es de
+                    administrador o de técnico.
+                  </small>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                  Unirme al negocio
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

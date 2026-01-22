@@ -1,0 +1,127 @@
+body {
+  background-color: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+h1, h2, h3, h4 {
+  color: #343a40;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  border: none;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 0.4rem;
+}
+
+.form-control {
+  border-radius: 5px;
+}
+
+#statusMessage,
+#editClientStatusMessage {
+  color: #28a745; /* se sobreescribe desde JS según error/éxito */
+}
+
+#searchNoResultsMessage,
+#pendingNoResultsMessage {
+  color: #dc3545;
+}
+
+textarea#faultDescription {
+  resize: vertical;
+}
+
+ul.list-group {
+  list-style-type: none;
+  margin-bottom: 0;
+}
+
+/* Estados de orden usando clases de Bootstrap (se aplican desde JS) */
+.list-group-item-info {
+  background-color: rgba(0, 123, 255, 0.08);
+}
+
+.list-group-item-warning {
+  background-color: rgba(255, 193, 7, 0.16);
+}
+
+.list-group-item-success {
+  background-color: rgba(40, 167, 69, 0.12);
+}
+
+.list-group-item-secondary {
+  background-color: rgba(108, 117, 125, 0.12);
+}
+.business-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;   /* si lo querés circular, poné 50% */
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Topbar mobile friendly */
+.topbar-actions .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-links {
+    width: 100%;
+  }
+
+  .topbar-links .btn {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  .topbar-buttons {
+    width: 100%;
+  }
+
+  /* Que WhatsApp y Cerrar sesión no se aplasten y se vean cómodos */
+  #btnToggleWhatsAppAuto,
+  #btnLogout {
+    width: 100%;
+  }
+}
+
+/* Extra: teléfonos muy chicos */
+@media (max-width: 420px) {
+  .topbar-links {
+    justify-content: flex-start;
+  }
+}
+
+/* Mobile: acciones ocupan todo el ancho */
+@media (max-width: 767.98px) {
+  .topbar-actions { width: 100%; }
+  .topbar-buttons { width: 100%; }
+  #btnToggleWhatsAppAuto, #btnLogout { width: 100%; }
+}
+
+/* Desktop: acciones a la derecha y ancho automático */
+@media (min-width: 768px) {
+  .topbar-actions {
+    width: auto;
+    justify-content: flex-end;
+  }
+}
+
+#btnToggleWhatsAppAuto{
+  color : #ffffff;
+}

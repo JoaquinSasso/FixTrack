@@ -1,0 +1,112 @@
+body {
+  background-color: #f8f9fa;
+  font-family: 'Arial', sans-serif;
+  max-width: 1600px;
+  margin: auto;
+  padding-bottom: 20px;
+}
+
+h1, h2 {
+  color: #343a40;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+/* Botones principales */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  margin-top: 10px;
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 5px;
+}
+
+/* Mensajes de estado */
+#statusMessage {
+  color: #28a745;
+}
+
+#noResultsMessage {
+  color: #dc3545;
+}
+
+/* Estado visual del bloque de estado (fondo lo ajusta JS) */
+#estadoOrden {
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Opciones de estado más compactas */
+.status-options .form-check {
+  margin-bottom: 0.4rem;
+}
+
+/* Textareas */
+textarea {
+  resize: vertical;
+}
+
+/* Eliminar el efecto hover de los enlaces */
+a:hover {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+/* Pequeños ajustes responsivos */
+@media (max-width: 767.98px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Layout cliente + QR: datos a la izquierda, QR a la derecha */
+.client-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  /* permitir que el contenedor respete el padding de la card */
+  margin-top: 0.5rem;
+}
+
+/* Zona izquierda: detalles (expande) */
+.client-details {
+  flex: 1 1 auto;
+  min-width: 0; /* evita overflow en elementos flex con long texts */
+}
+
+/* Zona derecha: QR (tamaño fijo) */
+.client-qr {
+  flex: 0 0 150px; /* ancho fijo del QR en escritorio */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Canvas del QR: que no salga grande */
+#qrcode {
+  width: 130px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}

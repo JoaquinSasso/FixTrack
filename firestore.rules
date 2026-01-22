@@ -1,0 +1,337 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+
+    // ---------- USERS (staff) ----------
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function userExists() { return isSignedIn() && userDoc().data != null; }
+    function userRole() { return userDoc().data.role; }
+    function userBusinessId() { return userDoc().data.businessId; }
+    function userStatus() { return userDoc().data.status; }
+
+    function isActive() { return userExists() && userStatus() == "active"; }
+
+    function isActiveStaff() {
+      return isActive() && (userRole() in ["owner","admin","tecnico"]);
+    }
+
+    function isOwnerOrAdmin() {
+      return userExists() && (userRole() in ["owner","admin"]);
+    }
+
+    // ---------- PLATFORM ADMIN ----------
+    function isPlatformAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/platformAdmins/$(request.auth.uid));
+    }
+
+    // ---------- TRACKERS (separado) ----------
+    function trackerExists() {
+      return isSignedIn() && exists(/databases/$(database)/documents/trackers/$(request.auth.uid));
+    }
+    function trackerDoc() {
+      return get(/databases/$(database)/documents/trackers/$(request.auth.uid)).data;
+    }
+    function isActiveTracker() {
+      return trackerExists() && trackerDoc().status == "active";
+    }
+    function trackerBusinessId() { return trackerDoc().businessId; }
+    function trackerDni() { return trackerDoc().dni; }
+
+    // ---------- JOIN CODES INDEX ----------
+    function joinCodeExists(code) {
+      return exists(/databases/$(database)/documents/joinCodes/$(code));
+    }
+    function joinCodeData(code) {
+      return get(/databases/$(database)/documents/joinCodes/$(code)).data;
+    }
+    function joinCodeEnabled(code) {
+      return joinCodeExists(code) &&
+        (!("disabled" in joinCodeData(code)) || joinCodeData(code).disabled != true);
+    }
+    function validJoin(code, bid, role) {
+      return joinCodeEnabled(code) &&
+        joinCodeData(code).businessId == bid &&
+        joinCodeData(code).role == role;
+    }
+
+    // onboarding: user sin role/businessId
+    function isFirstOnboarding() {
+      return (
+        (!("role" in resource.data) || resource.data.role == null) &&
+        (!("businessId" in resource.data) || resource.data.businessId == null)
+      );
+    }
+
+    // -------------------------
+    // PLATFORM ADMINS (solo consola)
+    // -------------------------
+    match /platformAdmins/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if false;
+      allow write: if false;
+    }
+
+    // -------------------------
+    // USERS (solo staff, no trackers)
+    // -------------------------
+    match /users/{userId} {
+
+      allow read: if isSignedIn() && (
+        isPlatformAdmin() ||
+        request.auth.uid == userId ||
+        (isOwnerOrAdmin() && userBusinessId() == resource.data.businessId)
+      );
+
+      // Create: doc básico sin role/businessId (bootstrap)
+      allow create: if isSignedIn() && request.auth.uid == userId && (
+        (!("role" in request.resource.data) && !("businessId" in request.resource.data))
+      );
+
+      allow update: if isSignedIn() && (
+        // 1) DEV puede todo
+        isPlatformAdmin()
+
+        ||
+
+        // 2) Self update (onboarding 1 vez + luego congelado)
+        (
+          request.auth.uid == userId &&
+          (
+            // 2a) Primer onboarding
+            (
+              isFirstOnboarding() &&
+              request.resource.data.businessId is string &&
+              request.resource.data.role in ["owner","admin","tecnico"] &&
+              (
+                // owner -> active
+                (request.resource.data.role == "owner" && request.resource.data.status == "active")
+
+                ||
+
+                // admin/tecnico -> pending con joinCode válido
+                (
+                  request.resource.data.role in ["admin","tecnico"] &&
+                  request.resource.data.joinCode is string &&
+                  request.resource.data.status == "pending" &&
+                  validJoin(
+                    request.resource.data.joinCode,
+                    request.resource.data.businessId,
+                    request.resource.data.role
+                  )
+                )
+              )
+            )
+
+            ||
+
+            // 2b) Después del onboarding: congelar role/businessId/status
+            (
+              request.resource.data.role == resource.data.role &&
+              request.resource.data.businessId == resource.data.businessId &&
+              request.resource.data.status == resource.data.status
+            )
+          )
+        )
+
+        ||
+
+        // 3) Owner/Admin pueden REVOCAR usuarios de su negocio (pero no activar)
+        (
+          isOwnerOrAdmin() &&
+          userBusinessId() == resource.data.businessId &&
+          request.resource.data.businessId == resource.data.businessId &&
+          request.resource.data.role == resource.data.role &&
+          (
+            request.resource.data.status == resource.data.status ||
+            request.resource.data.status == "revoked"
+          )
+        )
+      );
+
+      allow delete: if false;
+    }
+
+    // -------------------------
+    // TRACKERS (separados)
+    // -------------------------
+    match /trackers/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isPlatformAdmin());
+      allow list: if false;
+
+      allow create: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.businessId is string &&
+        request.resource.data.dni is string &&
+        request.resource.data.status == "active";
+
+      allow update: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.businessId == resource.data.businessId &&
+        request.resource.data.dni == resource.data.dni &&
+        request.resource.data.status == resource.data.status &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["lastSeenAt"]);
+
+      allow delete: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // USER SESSIONS (1 dispositivo a la vez)
+    // FIX: no depender de /users o /trackers (evita race en cuentas nuevas)
+    // ------------------------------------------------------------------
+    match /userSessions/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isPlatformAdmin());
+      allow list: if false;
+
+      allow create: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly([
+          "activeDeviceId",
+          "activeDeviceLabel",
+          "activeAt",
+          "lastSeenAt",
+          "businessId",
+          "role"
+        ]) &&
+        request.resource.data.activeDeviceId is string;
+
+      allow update: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "activeDeviceId",
+          "activeDeviceLabel",
+          "activeAt",
+          "lastSeenAt",
+          "releasedAt",
+          "businessId",
+          "role"
+        ]) &&
+        (
+          request.resource.data.activeDeviceId is string ||
+          request.resource.data.activeDeviceId == null
+        );
+
+      allow delete: if false;
+    }
+
+    // -------------------------
+    // BUSINESSES (privado)
+    // -------------------------
+    match /businesses/{businessId} {
+      allow read: if isPlatformAdmin() || (isActiveStaff() && userBusinessId() == businessId);
+
+      allow create: if isSignedIn() &&
+        request.resource.data.businessId == businessId &&
+        request.resource.data.ownerUid == request.auth.uid;
+
+      allow update, delete: if isPlatformAdmin();
+    }
+
+    // -------------------------
+    // BUSINESSES PUBLIC (tracking)
+    // -------------------------
+    match /businessesPublic/{businessId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+
+      allow create: if isSignedIn() &&
+        request.resource.data.businessId == businessId &&
+        exists(/databases/$(database)/documents/businesses/$(businessId)) &&
+        get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+
+      allow update, delete: if isPlatformAdmin();
+    }
+
+    // -------------------------
+    // BUSINESS RUNTIME (preferencias rápidas: WhatsApp auto, etc.)
+    // -------------------------
+    match /businessRuntime/{businessId} {
+      allow get: if isSignedIn() && (
+        isPlatformAdmin() ||
+        (isActiveStaff() && userBusinessId() == businessId)
+      );
+      allow list: if false;
+
+      // Permite crear el doc si no existe (owner recién creó negocio o staff legado)
+      allow create: if isSignedIn() && (
+        isPlatformAdmin() ||
+        (
+          exists(/databases/$(database)/documents/businesses/$(businessId)) &&
+          (
+            get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid ||
+            (isActiveStaff() && userBusinessId() == businessId)
+          )
+        )
+      ) &&
+      (
+        request.resource.data.keys().hasOnly(["whatsappAutoEnabled","updatedAt","updatedBy"]) ||
+        request.resource.data.keys().hasOnly(["whatsappAutoEnabled","updatedAt","updatedBy","createdAt","createdBy"])
+      ) &&
+      request.resource.data.whatsappAutoEnabled is bool &&
+      request.resource.data.updatedBy == request.auth.uid &&
+      (! ("createdBy" in request.resource.data) || request.resource.data.createdBy == request.auth.uid);
+
+      allow update: if isSignedIn() && (
+        isPlatformAdmin() ||
+        (isActiveStaff() && userBusinessId() == businessId)
+      ) &&
+      request.resource.data.diff(resource.data).affectedKeys().hasOnly(["whatsappAutoEnabled","updatedAt","updatedBy"]) &&
+      request.resource.data.whatsappAutoEnabled is bool &&
+      request.resource.data.updatedBy == request.auth.uid;
+
+      allow delete: if false;
+    }
+
+    match /businessSecrets/{businessId} {
+      allow read, write: if isPlatformAdmin();
+    }
+
+    match /joinCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create, update, delete: if isPlatformAdmin();
+    }
+
+    match /counters/{businessId} {
+      allow read, write: if isActiveStaff() && userBusinessId() == businessId;
+    }
+
+    match /clients/{clientId} {
+      allow read: if isSignedIn() && (
+        (isActiveStaff() && userBusinessId() == resource.data.businessId) ||
+        (isActiveTracker() &&
+          trackerBusinessId() == resource.data.businessId &&
+          trackerDni() == resource.data.dni)
+      );
+
+      allow create: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == request.resource.data.businessId;
+
+      allow update: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == resource.data.businessId &&
+        request.resource.data.businessId == resource.data.businessId;
+
+      allow delete: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == resource.data.businessId;
+    }
+
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (
+        (isActiveStaff() && userBusinessId() == resource.data.businessId) ||
+        (isActiveTracker() &&
+          trackerBusinessId() == resource.data.businessId &&
+          trackerDni() == resource.data.clientDNI)
+      );
+
+      allow create: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == request.resource.data.businessId;
+
+      allow update: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == resource.data.businessId &&
+        request.resource.data.businessId == resource.data.businessId;
+
+      allow delete: if isSignedIn() && isActiveStaff() &&
+        userBusinessId() == resource.data.businessId;
+    }
+  }
+}

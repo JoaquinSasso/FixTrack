@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de órdenes</title>
+
+  <!-- Open Graph Meta Tags (genéricas, se puede personalizar luego) -->
+  <meta property="og:title" content="Seguimiento de Órdenes" />
+  <meta property="og:description" content="Consultá el estado de tus órdenes de servicio técnico." />
+  <meta property="og:image" content="img/defaultLogo.png" />
+  <meta property="og:url" content="" />
+  <meta property="og:type" content="website" />
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Estilos propios del tracking (si los tenés) -->
+  <link rel="stylesheet" href="css/track.css" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5" id="user-dashboard">
+    <!-- Card con datos del negocio -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center brandContainer">
+          <!-- Logo del negocio (se llena desde Firestore por JS) -->
+          <img
+            id="businessLogo"
+            class="logo mr-3"
+            src="img/defaultLogo.png"
+            alt="Logo del negocio"
+            style="max-width: 80px; max-height: 80px; display: none;"
+          />
+
+          <div class="brandDetails">
+            <h1 id="businessName" class="h4 mb-2">Servicio técnico</h1>
+
+            <p class="mb-1">
+              <strong>Dirección:</strong>
+              <a id="businessAddressLink" href="#" target="_blank">
+                <span id="businessAddressText"></span>
+              </a>
+            </p>
+
+            <p class="mb-1">
+              <strong>Contacto:</strong>
+              <span id="businessPhoneText"></span>
+              <!-- Link a WhatsApp (se completa en JS si hay teléfono) -->
+              <span id="businessPhoneLinkWrapper">
+                &nbsp;–&nbsp;
+                <a id="businessPhoneLink" href="#" target="_blank"></a>
+              </span>
+            </p>
+
+            <p class="mb-0">
+              <strong>Correo:</strong>
+              <a id="businessEmailLink" href="#"></a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saludo al cliente -->
+    <h3 id="client-name" class="mb-4"></h3>
+
+    <!-- Contenedor de órdenes -->
+    <div id="ordersContainer"></div>
+  </div>
+
+  <!-- Bootstrap JS y dependencias (opcionales, para estilos) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- Lógica de tracking (usa firebase.js internamente) -->
+  <script type="module" src="js/pages/track.js"></script>
+</body>
+</html>

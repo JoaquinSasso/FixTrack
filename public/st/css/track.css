@@ -1,0 +1,43 @@
+.brandContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+}
+
+.brandDetails {
+  text-align: left;
+  font-size: 16px;
+}
+
+.brandDetails p {
+  margin: 0;
+}
+
+.logo {
+  width: 150px;
+  height: 100px;
+  margin-right: 30px;
+}
+
+@media (max-width: 768px) {
+  .brandContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brandDetails {
+    text-align: left;
+    margin-top: 10px;
+  }
+
+  .logo {
+    width: 100px;
+    height: auto;
+    margin: auto;
+  }
+}
+.card{
+  margin-bottom: 20px;
+}

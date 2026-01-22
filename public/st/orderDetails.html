@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de la Orden</title>
+    <link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/orderDetails.css">
+    <script type="module" src="js/pages/orderDetails.js"></script>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <!-- Encabezado de página -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h4 mb-1">Detalles de la orden</h1>
+          <p class="text-muted small mb-0">
+            Revisá la información, cambiá el estado y dejá notas internas.
+          </p>
+        </div>
+        <a href="index.html" class="btn btn-outline-secondary btn-sm">
+          Volver al inicio
+        </a>
+      </div>
+
+      <div class="row">
+        <!-- COLUMNA IZQUIERDA: INFO ORDEN + CLIENTE -->
+        <div class="col-lg-7 mb-4">
+          <!-- Resumen de la Orden -->
+          <div class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Resumen de la orden</h2>
+              <button id="printOrderButton"
+                class="btn btn-outline-primary btn-sm">
+                Imprimir orden
+              </button>
+            </div>
+            <div id="orderDetailsContent">
+              <!-- Los detalles de la orden se cargan por JS -->
+            </div>
+          </div>
+
+          <!-- Detalles del Cliente -->
+          <div class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Cliente</h2>
+              <span class="text-muted small">Datos de contacto</span>
+            </div>
+
+            <div class="client-card-body">
+              <!-- IZQUIERDA: datos del cliente -->
+              <div class="client-details" id="clientDetailsContent">
+                <!-- Los detalles del cliente se cargan por JS -->
+              </div>
+
+              <!-- DERECHA: QR -->
+              <div class="client-qr">
+                <canvas id="qrcode"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: ESTADO + ENTREGA -->
+        <div class="col-lg-5 mb-4">
+          <!-- Estado del Equipo -->
+          <div id="estadoOrden" class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Estado del equipo</h2>
+              <span class="badge badge-light text-muted small">
+                Seleccioná el estado actual
+              </span>
+            </div>
+
+            <div class="status-options">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status"
+                  value="Recibido" id="statusRecibido">
+                <label class="form-check-label" for="statusRecibido">
+                  Recibido
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status"
+                  value="En Reparación" id="statusEnReparacion">
+                <label class="form-check-label" for="statusEnReparacion">
+                  En reparación
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status"
+                  value="Reparado" id="statusReparado">
+                <label class="form-check-label" for="statusReparado">
+                  Reparado
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status"
+                  value="En Espera" id="statusEnEspera">
+                <label class="form-check-label" for="statusEnEspera">
+                  En espera
+                </label>
+              </div>
+              <div class="form-check mb-0">
+                <input class="form-check-input" type="radio" name="status"
+                  value="Entregado" id="statusEntregado" disabled>
+                <label class="form-check-label" for="statusEntregado">
+                  Entregado (usá la sección de entrega)
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección de Entrega -->
+          <div class="card p-4 mb-4">
+            <h2 class="h5 mb-2">Entrega del equipo</h2>
+            <p class="text-muted small mb-3">
+              Usá el código de seguridad para verificar si la persona que recibe
+              el equipo está autorizada.
+            </p>
+
+            <p id="securityCode"
+              class="font-weight-bold mb-3 text-center text-md-left">
+              <!-- Código se completa por JS -->
+            </p>
+
+            <div
+              class="d-flex flex-column flex-md-row align-items-stretch mb-3">
+              <button id="sendSecurityCodeButton"
+                class="btn btn-outline-secondary flex-fill mb-2 mb-md-0 mr-md-2">
+                Enviar código por WhatsApp
+              </button>
+              <button id="printDeliveryButton"
+                class="btn btn-outline-primary flex-fill">
+                Imprimir comprobante de entrega
+              </button>
+            </div>
+
+            <button id="confirmDeliveryButton"
+              class="btn btn-success btn-block">
+              Confirmar entrega
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTAS INTERNAS E INFORME DE REPARACIÓN -->
+      <div class="row">
+        <!-- Observaciones -->
+        <div class="col-lg-6 mb-4">
+          <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Notas internas</h2>
+              <small class="text-muted">Estas notas no son visibles para el
+                cliente.</small>
+            </div>
+            <textarea id="observationsText"
+              class="form-control mb-2"
+              rows="3"
+              placeholder="Observaciones generales sobre la orden"></textarea>
+            <div class="text-right">
+              <button id="saveObservationsButton"
+                class="btn btn-primary btn-sm">
+                Guardar notas
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informe de Reparación -->
+        <div class="col-lg-6 mb-4">
+          <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">Informe de reparación</h2>
+              <small class="text-muted">Detalle técnico y costo</small>
+            </div>
+            <textarea id="repairReportText"
+              class="form-control mb-2"
+              rows="3"
+              placeholder="Qué se hizo en la reparación"></textarea>
+            <label for="repairCost" class="small mb-1">
+              Costo de la reparación
+            </label>
+            <input type="number" id="repairCost"
+              class="form-control mb-2"
+              placeholder="Monto final">
+            <div class="text-right">
+              <button id="saveRepairReportButton"
+                class="btn btn-primary btn-sm">
+                Guardar informe
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MENSAJES AL CLIENTE -->
+      <div class="row">
+        <div class="col-lg-8 mb-4">
+          <div class="card p-4">
+            <h2 class="h5 mb-2">Mensajes al cliente</h2>
+            <p class="text-muted small mb-3">
+              Enviá un mensaje personalizado o reenviá el enlace de seguimiento
+              al cliente.
+            </p>
+            <textarea id="customMessageText"
+              class="form-control mb-3"
+              rows="3"
+              placeholder="Escribí tu mensaje personalizado aquí..."></textarea>
+            <div class="d-flex flex-column flex-md-row">
+              <button id="sendMessageButton"
+                class="btn btn-secondary mb-2 mb-md-0 mr-md-2 flex-fill">
+                Enviar mensaje personalizado
+              </button>
+              <button id="sendFollowing"
+                class="btn btn-outline-secondary flex-fill">
+                Reenviar enlace de seguimiento
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 mb-4 d-flex align-items-stretch">
+          <div class="card p-4 w-100 d-flex flex-column justify-content-center">
+            <h3 class="h6 mb-2 text-center">Atajo rápido</h3>
+            <p class="text-muted small text-center mb-3">
+              Cuando termines con esta orden, podés volver al panel principal.
+            </p>
+            <a href="index.html" class="btn btn-info btn-block">
+              Volver al inicio
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

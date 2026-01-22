@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio de Sesión</title>
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  >
+  <script type="module" src="js/pages/admin-login.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center mt-5">Inicio de Sesión</h2>
+
+    <!-- Mensaje de estado -->
+    <p id="loginStatus" class="text-center mt-2"></p>
+
+    <!-- Formulario de login -->
+    <form id="adminLoginForm" class="mt-3">
+      <div class="form-group">
+        <label for="adminEmail">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control"
+          id="adminEmail"
+          placeholder="ejemplo@correo.com"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="adminPassword">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="adminPassword"
+          placeholder="Tu contraseña"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        Iniciar sesión
+      </button>
+
+      <p class="mt-3 text-center">
+        ¿Es tu primera vez usando el sistema?
+        <a href="admin-register.html">Crear cuenta nueva</a>
+      </p>
+    </form>
+
+    <hr class="my-4">
+
+    <button
+      id="googleLoginButton"
+      class="btn btn-outline-dark btn-block d-flex align-items-center justify-content-center"
+      type="button"
+    >
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google"
+        style="height:20px; margin-right:8px;"
+      >
+      Iniciar sesión con Google
+    </button>
+  </div>
+</body>
+</html>

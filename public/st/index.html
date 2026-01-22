@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Órdenes de reparación</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/home_simplified.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script type="module" src="js/pages/home.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <style>
+      /* Mejora UX en mobile: que los botones de la barra superior no se aplasten */
+      @media (max-width: 420px) {
+        .top-actions-wrap { flex-direction: column; align-items: stretch !important; }
+        .top-actions-wrap .btn { width: 100%; }
+        .top-actions-wrap .btn + .btn { margin-top: .5rem; margin-left: 0 !important; }
+      }
+    </style>
+
+  </head>
+  <body>
+    <!-- Header: nombre del negocio + acciones -->
+    <!-- Header: nombre del negocio + acciones -->
+    <div class="container-fluid mt-3">
+      <div
+        class="topbar d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+
+        <!-- Marca (logo + nombre) -->
+        <div class="topbar-brand d-flex align-items-center mb-2 mb-md-0">
+          <img
+            id="businessLogo"
+            class="business-logo mr-2 d-none"
+            src=""
+            alt="Logo del negocio" />
+          <h2 id="businessNameHome" class="h5 mb-0">Panel de órdenes</h2>
+        </div>
+
+        <!-- Acciones -->
+        <div
+          class="topbar-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center ml-md-auto">
+          <!-- Links -->
+          <div
+            class="topbar-links d-flex flex-wrap align-items-center mb-2 mb-sm-0 mr-sm-2">
+            <a href="index.html" class="btn btn-link btn-sm px-2">Órdenes</a>
+            <a href="nueva-orden.html" class="btn btn-link btn-sm px-2">Nueva
+              orden</a>
+            <a href="clientes.html"
+              class="btn btn-link btn-sm px-2">Clientes</a>
+          </div>
+
+          <!-- Botones principales -->
+          <div
+            class="topbar-buttons d-flex flex-column flex-sm-row align-items-stretch">
+            <button
+              id="btnToggleWhatsAppAuto"
+              type="button"
+              class="btn btn-secondary btn-sm mb-2 mb-sm-0 mr-sm-2 text-white"
+              title="Habilitar / deshabilitar redirecciones automáticas a WhatsApp"
+              disabled>
+              <i class="fa-brands fa-whatsapp mr-1"></i>
+              <span id="waToggleLabel">Cargando...</span>
+            </button>
+
+            <button id="btnLogout" class="btn btn-outline-danger btn-sm">
+              Cerrar sesión
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <hr class="my-0" />
+    </div>
+
+    <!-- Layout principal -->
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Columna izquierda: búsqueda + pendientes -->
+        <div class="col-lg-8 mb-4">
+          <!-- Buscar órdenes -->
+          <div id="searchOrdersSection" class="card p-4 mb-4">
+            <div
+              class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+              <div>
+                <h1 class="h4 mb-1">Buscar órdenes</h1>
+                <p class="text-muted small mb-0">
+                  Escribí el número de orden, DNI, CUIT o nombre del cliente.
+                </p>
+              </div>
+              <button
+                id="calendarButton"
+                type="button"
+                class="btn btn-outline-secondary btn-sm mt-3 mt-md-0">
+                <i class="fa-regular fa-calendar mr-1"></i>
+                Buscar por fecha de entrega
+              </button>
+            </div>
+
+            <div class="form-group mb-0">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="searchQuery"
+                  class="form-control"
+                  placeholder="Nro de orden, DNI, CUIT o nombre del cliente"
+                  autocomplete="off" />
+                <div class="input-group-append">
+                  <button
+                    id="searchButton"
+                    class="btn btn-primary"
+                    type="button">
+                    <i class="fa-solid fa-magnifying-glass mr-1"></i>
+                    Buscar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <ul id="ordersList" class="list-group mt-3"></ul>
+            <p
+              id="searchNoResultsMessage"
+              class="mt-3 text-center text-muted"
+              style="display: none;">
+              No se encontraron resultados.
+            </p>
+          </div>
+
+          <!-- Órdenes pendientes -->
+          <div id="receivedOrdersSection" class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h2 class="h4 mb-1">Órdenes pendientes</h2>
+                <p class="text-muted small mb-0">
+                  Órdenes que todavía no fueron entregadas al cliente.
+                </p>
+              </div>
+            </div>
+            <ul id="receivedOrdersList" class="list-group"></ul>
+            <p
+              id="pendingNoResultsMessage"
+              class="mt-3 text-center text-muted"
+              style="display: none;">
+              No hay órdenes pendientes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Columna derecha: atajos -->
+        <div class="col-lg-4 mb-4">
+          <div class="card p-4 mb-4">
+            <h2 class="h5 mb-2">Acciones rápidas</h2>
+            <p class="text-muted small mb-3">
+              Elegí qué querés hacer.
+            </p>
+            <a href="nueva-orden.html" class="btn btn-success btn-block mb-2">
+              <i class="fa-solid fa-plus mr-1"></i>
+              Crear nueva orden
+            </a>
+            <a href="clientes.html" class="btn btn-outline-primary btn-block">
+              <i class="fa-solid fa-user mr-1"></i>
+              Gestionar clientes
+            </a>
+          </div>
+          <div class="card p-4">
+            <h3 class="h6 mb-2">Configuración del negocio</h3>
+            <p class="text-muted small mb-0">
+              Se puede modificar el nombre, logo y otros datos del negocio
+              (telefono, correo, dirección,etc.) solicitando al soporte.<br>
+              La primera configuración es completamente gratuita.<br>
+              También se pueden modificar los mensajes automáticos enviados a
+              los clientes.<br>
+              Código de negocio: <strong id="showBusinessCode"></strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

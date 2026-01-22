@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/home_simplified.css" />
+    <script type="module" src="js/pages/clientes.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="container-fluid mt-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <!-- Bloque: logo + nombre -->
+        <div class="d-flex align-items-center">
+          <img
+            id="businessLogo"
+            class="business-logo mr-2 d-none"
+            src=""
+            alt="Logo del negocio" />
+          <h2 id="businessNameHome" class="h5 mb-0">Panel de órdenes</h2>
+        </div>
+
+        <!-- Bloque: navegación + botones -->
+        <div class="d-flex align-items-center">
+          <a href="index.html" class="btn btn-link btn-sm mr-2">Órdenes</a>
+          <a href="nueva-orden.html" class="btn btn-link btn-sm mr-2">Nueva
+            orden</a>
+          <a href="clientes.html" class="btn btn-link btn-sm mr-3">Clientes</a>
+
+          <button
+            id="btnLogout"
+            class="btn btn-outline-danger btn-sm">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+      <hr class="my-0" />
+    </div>
+
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Buscar clientes y ver sus órdenes -->
+        <div class="col-lg-7 mb-4">
+          <div class="card p-4 mb-4">
+            <h1 class="h4 mb-2">Buscar clientes</h1>
+            <p class="text-muted small mb-3">
+              Buscá por DNI, CUIT o por nombre. Al seleccionar un cliente vas a ver
+              sus órdenes.
+            </p>
+            <div class="form-group mb-0">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="searchClientQuery"
+                  class="form-control"
+                  placeholder="DNI, CUIT o nombre del cliente"
+                  autocomplete="off" />
+                <div class="input-group-append">
+                  <button
+                    id="searchClientButton"
+                    class="btn btn-outline-primary"
+                    type="button">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    Buscar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <ul id="ordersList" class="list-group mt-3"></ul>
+            <p
+              id="searchNoResultsMessage"
+              class="mt-3 text-center text-muted"
+              style="display: none;">
+              No se encontraron resultados.
+            </p>
+          </div>
+        </div>
+
+        <!-- Editar datos de cliente -->
+        <div class="col-lg-5 mb-4">
+          <div id="editClientSection" class="card p-4">
+            <h2 class="h5 mb-3 text-center">Editar datos de cliente</h2>
+            <p class="text-muted small mb-3 text-center">
+              Escribí el DNI o CUIT del cliente para cargar y actualizar sus datos.
+            </p>
+            <div class="form-group">
+              <input
+                type="text"
+                id="editClientDNI"
+                class="form-control"
+                placeholder="DNI o CUIT del cliente"
+                autocomplete="off" />
+            </div>
+            <div id="clientDetails">
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="editClientName"
+                  class="form-control"
+                  placeholder="Nombre"
+                  autocomplete="off" />
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="editClientPhone"
+                  class="form-control"
+                  placeholder="Teléfono"
+                  autocomplete="off" />
+              </div>
+              <button id="updateClientButton" class="btn btn-warning btn-block">
+                Actualizar cliente
+              </button>
+            </div>
+            <p id="editClientStatusMessage" class="mt-2 text-center small"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

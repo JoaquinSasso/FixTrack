@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imprimir Orden</title>
+    <link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/printOrder.css">
+    <script
+      src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script type="module" src="js/pages/printOrder.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="order-details">
+        <div class="header-container">
+          <div class="cabecera">
+            <p><span id="orderNumber"></span></p>
+            <div>
+              <p><strong>Cliente:</strong> <span id="clientName"></span></p>
+              <p><strong>DNI:</strong> <span id="clientDNI"></span></p>
+            </div>
+          </div>
+          <div class="teldate">
+            <p><span id="entryDate"></span></p>
+            <p><strong>Tel:</strong> <span id="clientPhone"></span></p>
+          </div>
+        </div>
+        <div class="equipo">
+          <p><strong>Tipo:</strong> <span id="deviceType"></span></p>
+          <p><strong>Marca:</strong> <span id="deviceBrand"></span></p>
+          <p><strong>Serie:</strong> <span id="deviceSerial"></span></p>
+        </div>
+        <p><strong>Descripción de la Falla:</strong> <span
+            id="faultDescription"></span></p>
+        <p class="budget"><strong>Presupuesto: $<span
+              id="budget"></span></strong></p>
+      </div>
+      <div class="legal">
+        <h6>Condiciones de servicio</h6>
+        <p>
+          1º. El cliente declara que tiene la posesión legítima del equipo
+          indicado en
+          esta orden de servicio y que el mismo cumple con las normas
+          impositivas y
+          aduaneras vigentes. En caso de sospecha de ilícito o denuncia de robo,
+          <strong>BUSINESS</strong> podrá informar la situación a las
+          autoridades competentes.<br>
+
+          2º. Los servicios de reparación prestados por
+          <strong>BUSINESS</strong> cuentan con una
+          <strong>garantía de 30 (treinta) días corridos</strong> sobre la falla
+          efectivamente
+          reparada, contados desde la fecha de entrega del equipo, siempre que
+          el
+          equipo haya sido utilizado en condiciones normales. Si el técnico
+          determina
+          que se trata de una falla diferente, o que la misma falla se produjo
+          por uso
+          indebido o intervención de terceros, la garantía no será aplicable.
+          Esta
+          garantía de servicio se entiende <strong>sin perjuicio de las
+            garantías legales y
+            del fabricante</strong> que pudieran corresponder conforme a la Ley
+          24.240 de
+          Defensa del Consumidor y normativa vigente.<br>
+
+          3º. <strong>BUSINESS</strong> responderá únicamente por los productos
+          y equipos
+          expresamente detallados en esta orden de recepción. No se asume
+          responsabilidad alguna por otros bienes no descriptos al momento del
+          ingreso
+          (accesorios, periféricos, etc.).<br>
+
+          4º. La garantía no incluye, bajo ninguna condición, el retiro, entrega
+          o revisión
+          del equipo en el domicilio del cliente. Toda evaluación de garantía,
+          tanto de
+          productos como de servicios, se realiza exclusivamente en el taller de
+          <strong>BUSINESS</strong>. Los servicios a domicilio, en caso de estar
+          disponibles, se
+          cotizan por separado.<br>
+
+          5º. <strong>BUSINESS</strong> no garantiza la preservación de la
+          información almacenada
+          en el equipo (datos, archivos, programas, configuraciones, etc.). El
+          cliente
+          es responsable de realizar copias de seguridad de su información antes
+          de
+          entregar el equipo. Salvo dolo o culpa grave de
+          <strong>BUSINESS</strong>, ésta no será
+          responsable por la pérdida total o parcial de datos que pudiera
+          producirse
+          como consecuencia de las tareas de diagnóstico, reparación,
+          reinstalación de
+          software o sustitución de componentes.<br>
+
+          6º. Para gestionar garantías de fábrica o del proveedor sobre el
+          equipo o sus
+          componentes, se podrá requerir la presentación de la factura, remito
+          de
+          compra u otro comprobante idóneo que acredite la operación (fecha,
+          modelo y
+          número de serie), conforme a la Ley 24.240 y normas
+          complementarias.<br>
+
+          7º. La devolución del equipo se realizará únicamente contra
+          presentación del
+          comprobante electrónico o físico asociado a esta orden de servicio, o
+          contra
+          identificación fehaciente del cliente que figure como titular de la
+          orden y/o
+          del equipo. <strong>BUSINESS</strong> podrá solicitar documentos
+          adicionales si lo
+          considera necesario para verificar la identidad del reclamante.<br>
+
+          8º. Todo equipo ingresado a <strong>BUSINESS</strong> para reparación
+          o presupuesto deberá
+          ser retirado dentro de los <strong>90 (noventa) días corridos</strong>
+          contados desde la
+          fecha de ingreso. Transcurrido dicho plazo, y luego de realizar al
+          menos un
+          intento razonable de contacto al cliente mediante los datos
+          informados, el
+          equipo podrá considerarse abandonado a los efectos de su guarda. En
+          ese
+          supuesto, <strong>BUSINESS</strong> podrá:
+          (a) cobrar cargos en concepto de depósito y almacenamiento, y
+          (b) disponer del equipo para recuperar los costos de diagnóstico,
+          reparación,
+          repuestos y guarda, todo ello conforme a la normativa civil y de
+          defensa del
+          consumidor aplicable. El cliente renuncia, en ese caso, a reclamar
+          suma alguna
+          en concepto de indemnización por el valor del equipo que no hubiese
+          retirado
+          en término.<br>
+
+          9º. Todas las condiciones aquí establecidas se interpretan y aplican
+          <strong>sin perjuicio de los derechos irrenunciables que la Ley 24.240
+            de Defensa
+            del Consumidor y demás normativa vigente reconocen al cliente como
+            consumidor</strong>. En caso de duda o conflicto entre esta cláusula
+          y la normativa
+          vigente, prevalecerán siempre las disposiciones legales más favorables
+          al
+          consumidor.<br>
+        </p>
+      </div>
+      <div class="qr-signature">
+        <div class="qr-code">
+          <canvas id="qrcode"></canvas>
+        </div>
+        <div class="signature">
+          <p>Acepto condiciones</p>
+          <div class="signature-line"></div>
+          <p>Firma del cliente</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
