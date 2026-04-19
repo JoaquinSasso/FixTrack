@@ -151,6 +151,17 @@ service cloud.firestore {
             request.resource.data.status == "revoked"
           )
         )
+
+        ||
+
+        // 4) Self-seed para cuenta demo: permite asignarse como owner de negocio demo
+        (
+          request.auth.uid == userId &&
+          request.resource.data.role == "owner" &&
+          request.resource.data.status == "active" &&
+          request.resource.data.businessId is string &&
+          request.resource.data.businessId.matches("fixtrack-demo-.*")
+        )
       );
 
       allow delete: if false;
@@ -179,7 +190,6 @@ service cloud.firestore {
 
     // ------------------------------------------------------------------
     // USER SESSIONS (1 dispositivo a la vez)
-    // FIX: no depender de /users o /trackers (evita race en cuentas nuevas)
     // ------------------------------------------------------------------
     match /userSessions/{uid} {
       allow get: if isSignedIn() && (request.auth.uid == uid || isPlatformAdmin());
@@ -243,7 +253,7 @@ service cloud.firestore {
     }
 
     // -------------------------
-    // BUSINESS RUNTIME (preferencias rápidas: WhatsApp auto, etc.)
+    // BUSINESS RUNTIME
     // -------------------------
     match /businessRuntime/{businessId} {
       allow get: if isSignedIn() && (
@@ -252,7 +262,6 @@ service cloud.firestore {
       );
       allow list: if false;
 
-      // Permite crear el doc si no existe (owner recién creó negocio o staff legado)
       allow create: if isSignedIn() && (
         isPlatformAdmin() ||
         (
