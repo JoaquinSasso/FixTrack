@@ -205,7 +205,6 @@ function setStatus(text, cls) {
   statusBadge.className   = `status-${cls}`;
 }
 
-const DEMO_BUSINESS_SUFFIX = "demo";
 const DEMO_MESSAGES = {
   order_created: "Hola [NOMBRE_CLIENTE], registramos tu equipo. Seguí el estado en [LINK_SEGUIMIENTO].",
   repair_started: "Hola [NOMBRE_CLIENTE], tu equipo está en reparación.",
@@ -257,7 +256,7 @@ async function runSeed() {
     log(`Usuario: ${user.email}`, "ok");
 
     const uid        = user.uid;
-    const businessId = `fixtrack-${DEMO_BUSINESS_SUFFIX}-${uid.slice(0, 6).toLowerCase()}`;
+    const businessId = `fixtrack-demo`;
 
     // 1. Limpieza de datos antiguos (Órdenes y Clientes)
     log("Limpiando órdenes y clientes previos...", "info");

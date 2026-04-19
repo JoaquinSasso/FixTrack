@@ -203,10 +203,8 @@ service cloud.firestore {
     // BUSINESSES
     // -------------------------
     match /businesses/{businessId} {
-
       // Demo: solo puede leer/escribir su propio negocio demo
       allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
-
       allow read: if isPlatformAdmin() || (isActiveStaff() && userBusinessId() == businessId);
 
       allow create: if isSignedIn() &&
@@ -220,7 +218,6 @@ service cloud.firestore {
     // BUSINESSES PUBLIC
     // -------------------------
     match /businessesPublic/{businessId} {
-
       // Demo: solo puede leer/escribir su propio negocio demo
       allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
 
@@ -239,7 +236,6 @@ service cloud.firestore {
     // BUSINESS RUNTIME
     // -------------------------
     match /businessRuntime/{businessId} {
-
       // Demo: solo puede leer/escribir su propio negocio demo
       allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
 
@@ -300,7 +296,6 @@ service cloud.firestore {
     match /counters/{businessId} {
       // Demo: solo su propio contador
       allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
-
       allow read, write: if isActiveStaff() && userBusinessId() == businessId;
     }
 
@@ -309,11 +304,11 @@ service cloud.firestore {
     // -------------------------
     match /clients/{clientId} {
 
-      // Demo: solo clientes de su negocio demo
-      allow read, write: if isDemoAccount() &&
-        isDemoBusinessId(request.resource.data.businessId);
-
-      allow read: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
+      // Demo: Permiso para crear o actualizar un cliente (usa request.resource)
+      allow create, update: if isDemoAccount() && isDemoBusinessId(request.resource.data.businessId);
+      
+      // Demo: Permiso para leer o borrar (usa resource porque request.resource no existe en un delete)
+      allow read, delete: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
 
       allow read: if isSignedIn() && (
         (isActiveStaff() && userBusinessId() == resource.data.businessId) ||
@@ -338,11 +333,11 @@ service cloud.firestore {
     // -------------------------
     match /orders/{orderId} {
 
-      // Demo: solo órdenes de su negocio demo
-      allow read, write: if isDemoAccount() &&
-        isDemoBusinessId(request.resource.data.businessId);
-
-      allow read: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
+      // Demo: Permiso para crear o actualizar una orden
+      allow create, update: if isDemoAccount() && isDemoBusinessId(request.resource.data.businessId);
+      
+      // Demo: Permiso para leer o borrar
+      allow read, delete: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
 
       allow read: if isSignedIn() && (
         (isActiveStaff() && userBusinessId() == resource.data.businessId) ||

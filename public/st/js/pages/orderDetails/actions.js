@@ -21,6 +21,7 @@ async function handleStatusChange(newStatus) {
 			updates.exitDate = new Date().toISOString();
 		}
 
+		// Ya no se guarda el código en Firebase, se mantiene volátil
 		const orderRef = doc(db, "orders", state.currentOrderId);
 		await updateDoc(orderRef, updates);
 
@@ -31,6 +32,8 @@ async function handleStatusChange(newStatus) {
 
 		renderOrderDetails();
 		renderStatusSection();
+		// Al renderizar, si no había código en memoria para esta sesión, lo crea.
+		renderSecurityCode();
 
 		// Enviar mensaje automático según el estado
 		if (newStatus === "En Reparación") {
@@ -51,8 +54,6 @@ async function handleStatusChange(newStatus) {
 async function confirmDelivery() {
 	if (!state.currentOrderId || !state.currentOrderData) return;
 
-	if (!confirm("¿Confirmar la entrega de este equipo?")) return;
-
 	try {
 		const nowISO = new Date().toISOString();
 		const updates = {
@@ -72,10 +73,8 @@ async function confirmDelivery() {
 		renderStatusSection();
 
 		await sendAutomaticStatusMessage("delivery_confirmed");
-		alert("Entrega confirmada correctamente.");
 	} catch (error) {
 		console.error("Error al confirmar entrega:", error);
-		alert("No se pudo confirmar la entrega.");
 	}
 }
 

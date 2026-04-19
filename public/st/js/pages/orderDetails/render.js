@@ -2,7 +2,13 @@
 import { state } from "./state.js";
 import { perf } from "./perf.js";
 import { ensureQRCodeLib } from "./cache.js";
-import { formatDate, showError, mostrarEstado } from "./utils.js";
+// Agregamos generateSecurityCode a la importación
+import {
+	formatDate,
+	showError,
+	mostrarEstado,
+	generateSecurityCode,
+} from "./utils.js";
 import { isMobileDevice, normalizePhoneForWhatsApp } from "./whatsapp.js";
 
 function renderOrderDetails() {
@@ -10,21 +16,21 @@ function renderOrderDetails() {
 	if (!order) return;
 
 	const container = document.getElementById("orderDetailsContent");
-	if (!container) return;
-
-	container.innerHTML = `
-    <p><strong>Número de Orden:</strong> ${order.orderNumber}</p>
-    <p><strong>Fecha de Ingreso:</strong> ${formatDate(order.entryDate)}</p>
-    <p><strong>Fecha de Egreso:</strong> ${
-			order.exitDate ? formatDate(order.exitDate) : "No especificada"
-		}</p>
-    <p><strong>Tipo de Equipo:</strong> ${order.deviceType || ""}</p>
-    <p><strong>Marca del Equipo:</strong> ${order.deviceBrand || ""}</p>
-    <p><strong>Número de Serie o IMEI:</strong> ${order.deviceSerial || ""}</p>
-    <p><strong>Motivo de Falla:</strong> ${order.faultDescription || ""}</p>
-    <p><strong>Presupuesto:</strong> ${order.budget ?? ""}</p>
-    <p><strong>Estado:</strong> ${order.status || ""}</p>
-  `;
+	if (container) {
+		container.innerHTML = `
+			<p><strong>Número de Orden:</strong> ${order.orderNumber}</p>
+			<p><strong>Fecha de Ingreso:</strong> ${formatDate(order.entryDate)}</p>
+			<p><strong>Fecha de Egreso:</strong> ${
+				order.exitDate ? formatDate(order.exitDate) : "No especificada"
+			}</p>
+			<p><strong>Tipo de Equipo:</strong> ${order.deviceType || ""}</p>
+			<p><strong>Marca del Equipo:</strong> ${order.deviceBrand || ""}</p>
+			<p><strong>Número de Serie o IMEI:</strong> ${order.deviceSerial || ""}</p>
+			<p><strong>Motivo de Falla:</strong> ${order.faultDescription || ""}</p>
+			<p><strong>Presupuesto:</strong> ${order.budget ?? ""}</p>
+			<p><strong>Estado:</strong> ${order.status || ""}</p>
+		`;
+	}
 
 	const obsEl = document.getElementById("observationsText");
 	if (obsEl) {
@@ -40,6 +46,9 @@ function renderOrderDetails() {
 	if (costEl) {
 		costEl.value = order.cost ?? "";
 	}
+
+	// Forzamos el renderizado del código
+	renderSecurityCode();
 }
 
 function renderClientDetails() {
@@ -78,16 +87,19 @@ function renderSecurityCode() {
 	const el = document.getElementById("securityCode");
 	if (!el || !state.currentOrderData) return;
 
-	const code = state.currentOrderData.securityCode;
-	if (code) {
-		el.textContent = `Código de Seguridad: ${code}`;
-	} else {
-		el.textContent = "";
+	// Si no hay código en la sesión actual, lo generamos en el momento.
+	// Al no estar guardado en BD, si refrescas la página, esto será false y generará uno nuevo.
+	if (!state.currentOrderData.securityCode) {
+		state.currentOrderData.securityCode = generateSecurityCode().toString();
 	}
+
+	const code = state.currentOrderData.securityCode;
+
+	el.innerHTML = `<span class="text-danger" style="font-size: 1.1em;">🔒 Código de Seguridad: <strong>${code}</strong></span>`;
+	el.style.display = "block";
 }
 
 function renderQRCode() {
-	// Lo hacemos async para poder lazy-load de la lib sin bloquear la carga inicial
 	void renderQRCodeAsync();
 }
 
@@ -98,7 +110,6 @@ async function renderQRCodeAsync() {
 	const container = document.getElementById("clientDetailsContent");
 	if (!container) return;
 
-	// Evitar duplicados (esta función puede llamarse 2 veces: cache + server)
 	const oldBtn = document.getElementById("openWhatsAppBtn");
 	if (oldBtn) oldBtn.remove();
 
@@ -106,13 +117,11 @@ async function renderQRCodeAsync() {
 	const qrCanvas = document.getElementById("qrcode");
 
 	if (isMobileDevice()) {
-		// En mobile no mostramos el QR
 		if (qrContainer) {
 			qrContainer.style.display = "none";
 			qrContainer.style.height = "0px";
 		}
 
-		// Botón para abrir WhatsApp directamente
 		const waButton = document.createElement("button");
 		waButton.id = "openWhatsAppBtn";
 		waButton.type = "button";
@@ -138,7 +147,6 @@ async function renderQRCodeAsync() {
 		return;
 	}
 
-	// Desktop: mostramos QR si hay teléfono
 	if (qrContainer) qrContainer.style.display = "";
 	if (!client.phone || !qrCanvas) return;
 
@@ -146,7 +154,6 @@ async function renderQRCodeAsync() {
 		await ensureQRCodeLib();
 		if (!window.QRCode || typeof window.QRCode.toCanvas !== "function") return;
 
-		// Limpia canvas (por si cambia la orden sin recargar)
 		const ctx2d = qrCanvas.getContext("2d");
 		if (ctx2d) ctx2d.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
 
@@ -162,5 +169,10 @@ async function renderQRCodeAsync() {
 }
 
 export {
-	renderOrderDetails, renderClientDetails, renderStatusSection, renderSecurityCode, renderQRCode, renderQRCodeAsync,
+	renderOrderDetails,
+	renderClientDetails,
+	renderStatusSection,
+	renderSecurityCode,
+	renderQRCode,
+	renderQRCodeAsync,
 };

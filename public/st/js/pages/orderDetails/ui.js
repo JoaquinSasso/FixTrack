@@ -2,7 +2,12 @@
 import { state } from "./state.js";
 import { perf } from "./perf.js";
 import { auth, signOut, releaseExclusiveDeviceSession } from "./deps.js";
-import { handleStatusChange, confirmDelivery, saveObservations, saveRepairReport } from "./actions.js";
+import {
+	handleStatusChange,
+	confirmDelivery,
+	saveObservations,
+	saveRepairReport,
+} from "./actions.js";
 import { sendCustomMessage, sendWhatsAppMessage, sendAutomaticStatusMessage } from "./whatsapp.js";
 import { generateSecurityCode } from "./utils.js";
 import { renderSecurityCode } from "./render.js";
@@ -27,7 +32,7 @@ function setupStaticListeners() {
 				openPrintOrderWindow(state.currentOrderData, state.currentClientData);
 			} else {
 				alert(
-					"La orden todavía no terminó de cargarse. Intenta nuevamente en unos segundos."
+					"La orden todavía no terminó de cargarse. Intenta nuevamente en unos segundos.",
 				);
 			}
 		});
@@ -38,10 +43,13 @@ function setupStaticListeners() {
 	if (printDeliveryBtn) {
 		printDeliveryBtn.addEventListener("click", () => {
 			if (state.currentOrderData && state.currentClientData) {
-				openPrintDeliveryWindow(state.currentOrderData, state.currentClientData);
+				openPrintDeliveryWindow(
+					state.currentOrderData,
+					state.currentClientData,
+				);
 			} else {
 				alert(
-					"La orden todavía no terminó de cargarse. Intenta nuevamente en unos segundos."
+					"La orden todavía no terminó de cargarse. Intenta nuevamente en unos segundos.",
 				);
 			}
 		});
@@ -51,6 +59,7 @@ function setupStaticListeners() {
 	const sendSecurityBtn = document.getElementById("sendSecurityCodeButton");
 	if (sendSecurityBtn) {
 		sendSecurityBtn.addEventListener("click", async () => {
+			// El código ya está asignado dinámicamente en state.currentOrderData
 			await sendAutomaticStatusMessage("security_code", { force: true });
 		});
 	}
