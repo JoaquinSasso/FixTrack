@@ -93,12 +93,16 @@ function generateTrackingUrl() {
 
 	const businessDomain =
 		state.currentBusinessConfig && state.currentBusinessConfig.customDomain;
+
+	// Determinamos dinámicamente si estamos corriendo dentro de la carpeta /st/
+	const basePath = window.location.pathname.includes("/st/") ? "/st" : "";
+
 	const baseUrl = businessDomain
 		? ensureHttps(businessDomain)
-		: window.location.origin;
+		: window.location.origin + basePath;
 
 	return `${baseUrl}/track.html?b=${encodeURIComponent(
-		state.currentBusinessId
+		state.currentBusinessId,
 	)}&dni=${encodeURIComponent(state.currentOrderData.clientDNI)}`;
 }
 
