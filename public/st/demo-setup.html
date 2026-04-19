@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
   <style>
     body { background: #f0f4f8; font-family: Arial, sans-serif; }
-
     .hero {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       color: white;
@@ -17,7 +16,6 @@
     }
     .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
     .hero p  { font-size: 1rem; opacity: .85; margin-bottom: 0; }
-
     .badge-demo {
       display: inline-block;
       background: #e94560;
@@ -30,7 +28,6 @@
       margin-bottom: 16px;
       text-transform: uppercase;
     }
-
     .card-main {
       max-width: 600px;
       margin: 40px auto;
@@ -39,7 +36,6 @@
       border: none;
       overflow: hidden;
     }
-
     .step {
       display: flex;
       align-items: flex-start;
@@ -62,7 +58,6 @@
       margin-top: 2px;
     }
     .step-text { font-size: .92rem; color: #444; line-height: 1.5; }
-
     #log-container {
       background: #1a1a2e;
       color: #a8ff78;
@@ -74,14 +69,13 @@
       max-height: 320px;
       overflow-y: auto;
       margin-top: 16px;
-      display: none;
+      display: block;
     }
     .log-line { margin-bottom: 4px; }
     .log-ok    { color: #a8ff78; }
     .log-info  { color: #78d4ff; }
     .log-warn  { color: #ffd978; }
     .log-error { color: #ff7878; }
-
     .btn-seed {
       background: #e94560;
       border: none;
@@ -95,7 +89,6 @@
     }
     .btn-seed:hover:not(:disabled) { background: #c73652; color: white; }
     .btn-seed:disabled { background: #aaa; cursor: not-allowed; }
-
     .btn-go {
       background: #0f3460;
       border: none;
@@ -107,7 +100,6 @@
       font-size: 1rem;
     }
     .btn-go:hover { background: #16213e; color: white; }
-
     #status-badge {
       display: inline-block;
       padding: 6px 18px;
@@ -120,18 +112,6 @@
     .status-running { background: #fff3cd; color: #856404; }
     .status-done    { background: #d1e7dd; color: #0f5132; }
     .status-error   { background: #f8d7da; color: #842029; }
-
-    .warning-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: .88rem;
-      color: #664d03;
-      margin-bottom: 20px;
-    }
-    .warning-box strong { display: block; margin-bottom: 4px; }
-
     .info-box {
       background: #e7f3ff;
       border: 1px solid #90c4f9;
@@ -146,72 +126,51 @@
 <body>
 
 <div class="hero">
-  <div class="badge-demo">Demo</div>
-  <h1>🛠️ FixTrack — Configuración de Demo</h1>
-  <p>Esta página crea un negocio de demo con datos realistas en tu propia cuenta.</p>
+  <div class="badge-demo">Estamos preparando tu Demo</div>
+  <h1>🛠️ FixTrack — Demo Autolimpiable</h1>
+  <p>Los datos se reinician automáticamente en cada inicio de sesión.</p>
 </div>
 
 <div class="card-main">
   <div class="card-body p-4">
-
-    <!-- Pasos -->
     <div class="mb-4">
       <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text"><strong>Iniciá sesión</strong> con tu cuenta de Google (o email). Se crea un negocio demo <em>en tu cuenta</em>, aislado del resto.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text"><strong>Hacé click en "Crear Demo"</strong>. El script carga clientes, órdenes en distintos estados y toda la configuración base.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text"><strong>Explorá el sistema</strong> como si fuera un negocio real. Podés modificar todo sin afectar a ningún otro usuario.</div>
+        <div class="step-num">⚡</div>
+        <div class="step-text"><strong>Carga Automática:</strong> Estamos cargando datos ficticios para tu demo.</div>
       </div>
     </div>
 
-    <div class="warning-box">
-      <strong>⚠️ Un demo por cuenta</strong>
-      Si ya tenés un demo creado anteriormente, el script lo detecta y no duplica datos. Podés recrearlo borrando el negocio demo desde el panel.
-    </div>
-
-    <!-- Estado -->
     <div class="text-center mb-3">
-      <span id="status-badge" class="status-idle">En espera</span>
+      <span id="status-badge" class="status-idle">Esperando autenticación...</span>
     </div>
 
-    <!-- Botón principal -->
-    <button id="btn-seed" class="btn-seed mb-3" onclick="runSeed()">
-      🚀 Crear Demo
+    <button id="btn-seed" class="btn-seed mb-3" onclick="runSeed()" disabled>
+      🚀 Reiniciando Datos...
     </button>
 
-    <!-- Log -->
-    <div id="log-container"></div>
+    <div id="log-container">
+      <div class="log-line log-info">Inicie sesión para comenzar el proceso...</div>
+    </div>
 
-    <!-- Botón ir al panel (oculto hasta que termina) -->
     <div id="btn-go-wrapper" style="display:none; margin-top:16px;">
       <div class="info-box">
-        ✅ El demo está listo. Entrá al panel y explorá el sistema.
+        ✅ Demo lista y reiniciada. Podés entrar al panel ahora.
       </div>
       <a id="btn-go" class="btn btn-go" href="index.html">
         Ir al Panel →
       </a>
     </div>
-
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  doc, getDoc, setDoc, writeBatch, serverTimestamp, Timestamp
+  doc, getDoc, setDoc, writeBatch, serverTimestamp, collection, query, where, getDocs, deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-// ─── Configuración Firebase (misma que firebase.js) ───────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyBN7waVUsWH25lfmE7kiX8pzUBqnv_wWUQ",
   authDomain:        "gestion-ordenes-web.firebaseapp.com",
@@ -227,14 +186,12 @@ const db   = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
 
-// ─── UI helpers ───────────────────────────────────────────────────────────
 const logContainer  = document.getElementById("log-container");
 const statusBadge   = document.getElementById("status-badge");
 const btnSeed       = document.getElementById("btn-seed");
 const btnGoWrapper  = document.getElementById("btn-go-wrapper");
 
 function log(msg, type = "ok") {
-  logContainer.style.display = "block";
   const line = document.createElement("div");
   line.className = `log-line log-${type}`;
   const prefix = { ok: "✓", info: "→", warn: "⚠", error: "✗" }[type] || "·";
@@ -248,141 +205,36 @@ function setStatus(text, cls) {
   statusBadge.className   = `status-${cls}`;
 }
 
-// ─── Datos de demo ────────────────────────────────────────────────────────
-
 const DEMO_BUSINESS_SUFFIX = "demo";
-
 const DEMO_MESSAGES = {
-  order_created:      "Hola [NOMBRE_CLIENTE], registramos tu equipo. Seguí el estado en [LINK_SEGUIMIENTO].",
-  repair_started:     "Hola [NOMBRE_CLIENTE], tu equipo está en reparación. Te avisamos cuando esté listo.",
-  repair_confirmed:   "Hola [NOMBRE_CLIENTE], tu equipo ya fue reparado. Número de orden: [NUMERO_ORDEN].",
-  delivery_confirmed: "Hola [NOMBRE_CLIENTE], confirmamos la entrega. ¡Gracias por confiar en [NOMBRE_NEGOCIO]!",
-  security_code:      "Tu código de seguridad para retirar el equipo es: [CODIGO_SEGURIDAD].",
+  order_created: "Hola [NOMBRE_CLIENTE], registramos tu equipo. Seguí el estado en [LINK_SEGUIMIENTO].",
+  repair_started: "Hola [NOMBRE_CLIENTE], tu equipo está en reparación.",
+  repair_confirmed: "Hola [NOMBRE_CLIENTE], tu equipo ya fue reparado. Orden: [NUMERO_ORDEN].",
+  delivery_confirmed: "Hola [NOMBRE_CLIENTE], confirmamos la entrega. ¡Gracias!",
+  security_code: "Tu código de seguridad es: [CODIGO_SEGURIDAD].",
 };
 
-// Clientes ficticios (todos con el mismo teléfono para evitar confusiones en el demo, pero con nombres y DNI distintos)
 const CLIENTS = [
-  { dni: "28441302", name: "Martín Ferreyra",    phone: "+5492645288667" },
-  { dni: "33109874", name: "Lucía Gómez",         phone: "+5492645288667" },
-  { dni: "40782215", name: "Sebastián Torres",   phone: "+5492645288667" },
-  { dni: "25634788", name: "Ana Rodríguez",       phone: "+5492645288667" },
-  { dni: "37291043", name: "Diego Villanueva",    phone: "+5492645288667" },
-  { dni: "31558820", name: "Valeria Méndez",      phone: "+5492645288667" },
-  { dni: "29884431", name: "Carlos Navarro",      phone: "+5492645288667" },
-  { dni: "42003158", name: "Florencia Herrera",   phone: "+5492645288667" },
+  { dni: "28441302", name: "Martín Ferreyra", phone: "+5492645288667" },
+  { dni: "33109874", name: "Lucía Gómez", phone: "+5492645288667" },
+  { dni: "40782215", name: "Sebastián Torres", phone: "+5492645288667" },
+  { dni: "25634788", name: "Ana Rodríguez", phone: "+5492645288667" },
+  { dni: "37291043", name: "Diego Villanueva", phone: "+5492645288667" },
+  { dni: "31558820", name: "Valeria Méndez", phone: "+5492645288667" },
+  { dni: "29884431", name: "Carlos Navarro", phone: "+5492645288667" },
+  { dni: "42003158", name: "Florencia Herrera", phone: "+5492645288667" },
 ];
 
-// Órdenes ficticias — cubre todos los estados del sistema
 const ORDERS_TEMPLATE = [
-  {
-    clientDni:   "28441302",
-    deviceType:  "Notebook",
-    deviceBrand: "HP Pavilion 15",
-    deviceSerial:"5CD12345XY",
-    fault:       "No enciende. Pulsa el botón de encendido y no hay señal de vida.",
-    budget:      15000,
-    cost:        12500,
-    status:      "Reparado",
-    repairReport:"Se reemplazó el fusible de la placa base y se limpió el conector de carga.",
-    observations:"Cliente muy urgente, avisarle en cuanto esté.",
-    daysAgo:     5,
-  },
-  {
-    clientDni:   "33109874",
-    deviceType:  "PC de escritorio",
-    deviceBrand: "Ensamblado AMD",
-    deviceSerial:"",
-    fault:       "Pantalla azul al iniciar Windows. Error CRITICAL_PROCESS_DIED.",
-    budget:      8000,
-    cost:        0,
-    status:      "En Reparación",
-    repairReport:"",
-    observations:"Se inició diagnóstico de disco. Parece falla en sector de arranque.",
-    daysAgo:     2,
-  },
-  {
-    clientDni:   "40782215",
-    deviceType:  "Impresora",
-    deviceBrand: "Epson L3150",
-    deviceSerial:"X3LP002314",
-    fault:       "No imprime. El equipo enciende pero no reconoce cartuchos de tinta.",
-    budget:      3500,
-    cost:        3500,
-    status:      "Entregado",
-    repairReport:"Se resetearon los cabezales y se recargaron los depósitos de tinta originales.",
-    observations:"",
-    daysAgo:     12,
-    exitDaysAgo: 8,
-  },
-  {
-    clientDni:   "25634788",
-    deviceType:  "Notebook",
-    deviceBrand: "Lenovo IdeaPad 3",
-    deviceSerial:"PF3N1122",
-    fault:       "Teclado con varias teclas que no funcionan (A, S, D, Enter).",
-    budget:      9000,
-    cost:        0,
-    status:      "Recibido",
-    repairReport:"",
-    observations:"",
-    daysAgo:     0,
-  },
-  {
-    clientDni:   "37291043",
-    deviceType:  "Monitor",
-    deviceBrand: "Samsung 24\" Full HD",
-    deviceSerial:"0HN4CX20",
-    fault:       "La pantalla parpadea constantemente. Aumenta con el brillo al máximo.",
-    budget:      11000,
-    cost:        0,
-    status:      "En Espera",
-    repairReport:"Se requiere reemplazo de condensadores en placa de fuente. En espera de repuesto.",
-    observations:"Repuesto pedido al proveedor. Llega en 5 días hábiles.",
-    daysAgo:     7,
-  },
-  {
-    clientDni:   "31558820",
-    deviceType:  "Tablet",
-    deviceBrand: "Samsung Galaxy Tab A7",
-    deviceSerial:"R52N80FKT1B",
-    fault:       "Pantalla táctil no responde en la mitad inferior. Crack visible en el vidrio.",
-    budget:      18000,
-    cost:        17500,
-    status:      "Reparado",
-    repairReport:"Se reemplazó el módulo de pantalla completo. Verificado táctil en toda la superficie.",
-    observations:"",
-    daysAgo:     9,
-  },
-  {
-    clientDni:   "29884431",
-    deviceType:  "PC de escritorio",
-    deviceBrand: "Intel Core i5 ensamblada",
-    deviceSerial:"",
-    fault:       "La PC se reinicia sola cada 20-30 minutos aproximadamente.",
-    budget:      6000,
-    cost:        5000,
-    status:      "Entregado",
-    repairReport:"Se detectó falla en fuente de alimentación. Se reemplazó por fuente de 500W.",
-    observations:"",
-    daysAgo:     18,
-    exitDaysAgo: 14,
-  },
-  {
-    clientDni:   "42003158",
-    deviceType:  "Notebook",
-    deviceBrand: "Asus VivoBook 15",
-    deviceSerial:"G2N0CX19001",
-    fault:       "Bisagra derecha rota. La tapa se mueve suelta y cruje al abrir.",
-    budget:      7500,
-    cost:        0,
-    status:      "Recibido",
-    repairReport:"",
-    observations:"Revisar si hay daño en la carcasa además de la bisagra.",
-    daysAgo:     1,
-  },
+  { clientDni: "28441302", deviceType: "Notebook", deviceBrand: "HP Pavilion 15", deviceSerial:"5CD12345XY", fault: "No enciende.", budget: 15000, cost: 12500, status: "Reparado", repairReport:"Fusible reemplazado.", observations:"Urgente.", daysAgo: 5 },
+  { clientDni: "33109874", deviceType: "PC Escritorio", deviceBrand: "AMD", deviceSerial:"", fault: "Pantalla azul.", budget: 8000, cost: 0, status: "En Reparación", repairReport:"", observations:"", daysAgo: 2 },
+  { clientDni: "40782215", deviceType: "Impresora", deviceBrand: "Epson L3150", deviceSerial:"X3LP002314", fault: "No imprime.", budget: 3500, cost: 3500, status: "Entregado", repairReport:"Limpieza de cabezal.", observations:"", daysAgo: 12, exitDaysAgo: 8 },
+  { clientDni: "25634788", deviceType: "Notebook", deviceBrand: "Lenovo IdeaPad 3", deviceSerial:"PF3N1122", fault: "Teclado falla.", budget: 9000, cost: 0, status: "Recibido", repairReport:"", observations:"", daysAgo: 0 },
+  { clientDni: "37291043", deviceType: "Monitor", deviceBrand: "Samsung 24\"", deviceSerial:"0HN4CX20", fault: "Parpadea.", budget: 11000, cost: 0, status: "En Espera", repairReport:"Falta repuesto.", observations:"", daysAgo: 7 },
+  { clientDni: "31558820", deviceType: "Tablet", deviceBrand: "Galaxy Tab A7", deviceSerial:"R52N80FKT1B", fault: "Tactil roto.", budget: 18000, cost: 17500, status: "Reparado", repairReport:"Cambio de módulo.", observations:"", daysAgo: 9 },
+  { clientDni: "29884431", deviceType: "PC Escritorio", deviceBrand: "Intel i5", deviceSerial:"", fault: "Reinicios.", budget: 6000, cost: 5000, status: "Entregado", repairReport:"Cambio fuente.", observations:"", daysAgo: 18, exitDaysAgo: 14 },
+  { clientDni: "42003158", deviceType: "Notebook", deviceBrand: "Asus VivoBook", deviceSerial:"G2N0CX19001", fault: "Bisagra rota.", budget: 7500, cost: 0, status: "Recibido", repairReport:"", observations:"", daysAgo: 1 },
 ];
-
-// ─── Lógica de seed ───────────────────────────────────────────────────────
 
 function daysAgoISO(n) {
   const d = new Date();
@@ -390,192 +242,95 @@ function daysAgoISO(n) {
   return d.toISOString();
 }
 
-function slugify(str) {
-  return str.trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
 async function runSeed() {
   btnSeed.disabled = true;
-  setStatus("Iniciando…", "running");
-  logContainer.style.display = "block";
-  logContainer.innerHTML = "";
+  setStatus("Reiniciando datos...", "running");
+  log("Iniciando proceso de reset...", "info");
 
   try {
-    // 1) Autenticación
-    log("Verificando sesión…", "info");
     let user = auth.currentUser;
-    if (!user) {
-      log("No hay sesión activa. Abriendo login con Google…", "info");
-      const provider = new GoogleAuthProvider();
-      const cred = await signInWithPopup(auth, provider);
+    if (!user || user.email !== "demo@fixtrack.app") {
+      log("Autenticando...", "info");
+      const cred = await signInWithEmailAndPassword(auth, "demo@fixtrack.app", "demo1234");
       user = cred.user;
     }
-    log(`Sesión activa: ${user.email}`, "ok");
+    log(`Usuario: ${user.email}`, "ok");
 
-    // 2) Determinar businessId
     const uid        = user.uid;
-    const uidSuffix  = uid.slice(0, 6).toLowerCase();
-    const businessId = `fixtrack-${DEMO_BUSINESS_SUFFIX}-${uidSuffix}`;
-    log(`Business ID de demo: ${businessId}`, "info");
+    const businessId = `fixtrack-${DEMO_BUSINESS_SUFFIX}-${uid.slice(0, 6).toLowerCase()}`;
 
-    // 3) Verificar si ya existe
-    const bizRef  = doc(db, "businesses", businessId);
-    const bizSnap = await getDoc(bizRef);
-    if (bizSnap.exists()) {
-      log("Ya existe un demo para esta cuenta. No se duplican datos.", "warn");
-      setStatus("Demo ya existente", "done");
-      btnGoWrapper.style.display = "block";
-      btnSeed.disabled = false;
-      return;
-    }
+    // 1. Limpieza de datos antiguos (Órdenes y Clientes)
+    log("Limpiando órdenes y clientes previos...", "info");
+    const ordersQuery = query(collection(db, "orders"), where("businessId", "==", businessId));
+    const clientsQuery = query(collection(db, "clients"), where("businessId", "==", businessId));
+    
+    const [ordersSnap, clientsSnap] = await Promise.all([getDocs(ordersQuery), getDocs(clientsQuery)]);
+    
+    let deleteBatch = writeBatch(db);
+    ordersSnap.forEach(d => deleteBatch.delete(d.ref));
+    clientsSnap.forEach(d => deleteBatch.delete(d.ref));
+    await deleteBatch.commit();
+    log(`${ordersSnap.size} órdenes y ${clientsSnap.size} clientes eliminados.`, "ok");
 
-    // 4) Asegurar doc /users/{uid} (owner)
-    log("Configurando usuario como owner…", "info");
-    const userRef = doc(db, "users", uid);
-    await setDoc(userRef, {
-      displayName: user.displayName || "Usuario Demo",
-      email:       user.email       || "",
-      businessId,
-      role:        "owner",
-      status:      "active",
-      createdAt:   serverTimestamp(),
-    }, { merge: true });
-    log("Usuario configurado como owner.", "ok");
-
-    // 5) businesses/{businessId}
-    log("Creando negocio (businesses)…", "info");
-    await setDoc(bizRef, {
-      businessId,
-      ownerUid:    uid,
-      displayName: "FixTrack Demo",
-      logoUrl:     "",
-      planStatus:  "active",
-      createdAt:   serverTimestamp(),
-      messages:    DEMO_MESSAGES,
-    });
-    log("Negocio privado creado.", "ok");
-
-    // 6) businessesPublic/{businessId}
-    log("Creando perfil público (businessesPublic)…", "info");
-    await setDoc(doc(db, "businessesPublic", businessId), {
-      businessId,
-      displayName:    "FixTrack Demo",
-      logoUrl:        "",
-      contactPhone:   "+5492644000000",
-      contactAddress: "Av. Libertador 1234, San Juan",
-      contactMapsUrl: "https://maps.google.com",
-      contactEmail:   "demo@fixtrack.com",
-      contactSocial:  "@fixtrack_demo",
-      updatedAt:      serverTimestamp(),
-    });
-    log("Perfil público creado.", "ok");
-
-    // 7) businessRuntime/{businessId}
-    log("Configurando runtime (notificaciones)…", "info");
-    await setDoc(doc(db, "businessRuntime", businessId), {
-      whatsappAutoEnabled: true,
-      updatedAt:   serverTimestamp(),
-      updatedBy:   uid,
-      createdAt:   serverTimestamp(),
-      createdBy:   uid,
-    });
-    log("Runtime configurado.", "ok");
-
-    // 8) counters/{businessId}
-    log("Inicializando contador de órdenes…", "info");
-    await setDoc(doc(db, "counters", businessId), {
-      orderCounter: ORDERS_TEMPLATE.length,
-      updatedAt:    new Date().toISOString(),
-    });
-    log(`Contador inicializado en ${ORDERS_TEMPLATE.length}.`, "ok");
-
-    // 9) Clientes (batch)
-    log(`Creando ${CLIENTS.length} clientes…`, "info");
+    // 2. Configuración de Negocio y Usuario
     let batch = writeBatch(db);
-    let batchCount = 0;
+    
+    batch.set(doc(db, "users", uid), {
+      displayName: "Usuario Demo", email: user.email, businessId, role: "owner", status: "active", createdAt: serverTimestamp()
+    }, { merge: true });
 
-    for (const c of CLIENTS) {
+    batch.set(doc(db, "businesses", businessId), {
+      businessId, ownerUid: uid, displayName: "FixTrack Demo", planStatus: "active", createdAt: serverTimestamp(), messages: DEMO_MESSAGES
+    });
+
+    batch.set(doc(db, "businessesPublic", businessId), {
+      businessId, displayName: "FixTrack Demo", contactPhone: "+5492644000000", contactAddress: "San Juan, Argentina", updatedAt: serverTimestamp()
+    });
+
+    batch.set(doc(db, "counters", businessId), { orderCounter: ORDERS_TEMPLATE.length, updatedAt: new Date().toISOString() });
+
+    // 3. Carga de Seed Data
+    CLIENTS.forEach(c => {
       const clientId = `${businessId}_${c.dni}`;
-      batch.set(doc(db, "clients", clientId), {
-        businessId,
-        dni:       c.dni,
-        name:      c.name,
-        nameLower: c.name.toLowerCase(),
-        phone:     c.phone,
-        updatedAt: new Date().toISOString(),
-      });
-      batchCount++;
-      // Firestore limita 500 ops por batch; con 8 clientes estamos muy lejos,
-      // pero lo manejamos por las dudas.
-      if (batchCount === 490) {
-        await batch.commit();
-        batch = writeBatch(db);
-        batchCount = 0;
-      }
-    }
+      batch.set(doc(db, "clients", clientId), { ...c, businessId, nameLower: c.name.toLowerCase(), updatedAt: new Date().toISOString() });
+    });
 
-    // 10) Órdenes (mismo batch o nuevo si hizo falta)
-    log(`Creando ${ORDERS_TEMPLATE.length} órdenes…`, "info");
-
-    for (let i = 0; i < ORDERS_TEMPLATE.length; i++) {
-      const o          = ORDERS_TEMPLATE[i];
-      const orderNum   = i + 1;
-      const orderId    = `${businessId}_${orderNum}`;
-      const entryDate  = daysAgoISO(o.daysAgo);
-      const exitDate   = o.exitDaysAgo != null ? daysAgoISO(o.exitDaysAgo) : "";
-
+    ORDERS_TEMPLATE.forEach((o, i) => {
+      const orderNum = i + 1;
+      const orderId  = `${businessId}_${orderNum}`;
       batch.set(doc(db, "orders", orderId), {
-        businessId,
-        orderNumber:     orderNum,
-        clientDNI:       o.clientDni,
-        entryDate,
-        exitDate,
-        deviceType:      o.deviceType,
-        deviceBrand:     o.deviceBrand,
-        deviceSerial:    o.deviceSerial,
-        faultDescription:o.fault,
-        observations:    o.observations,
-        repairReport:    o.repairReport,
-        budget:          o.budget,
-        cost:            o.cost,
-        status:          o.status,
-        createdByUid:    uid,
-        createdAt:       entryDate,
+        ...o, businessId, orderNumber: orderNum, clientDNI: o.clientDni,
+        entryDate: daysAgoISO(o.daysAgo), exitDate: o.exitDaysAgo != null ? daysAgoISO(o.exitDaysAgo) : "",
+        createdByUid: uid, createdAt: daysAgoISO(o.daysAgo)
       });
-      batchCount++;
-    }
+    });
 
     await batch.commit();
-    log("Clientes y órdenes creados.", "ok");
-
-    // 11) Listo
-    log("─────────────────────────────", "info");
-    log("¡Demo creado con éxito!", "ok");
-    log(`Negocio: "FixTrack Demo"  |  ID: ${businessId}`, "info");
-    log(`${CLIENTS.length} clientes  |  ${ORDERS_TEMPLATE.length} órdenes`, "info");
-    setStatus("✅ Demo listo", "done");
+    log("Reset completado con éxito.", "ok");
+    setStatus("✅ Demo lista", "done");
     btnGoWrapper.style.display = "block";
 
   } catch (err) {
-    console.error(err);
     log(`Error: ${err.message}`, "error");
-    setStatus("Error al crear demo", "error");
+    setStatus("Error en reset", "error");
     btnSeed.disabled = false;
   }
 }
 
-// Exponer la función al onclick del botón (que está fuera del módulo)
 window.runSeed = runSeed;
 
-// Si ya hay sesión, mostrar el email en el botón
+// DISPARADOR AUTOMÁTICO
 onAuthStateChanged(auth, user => {
-  if (user) {
-    btnSeed.textContent = `🚀 Crear Demo (${user.email})`;
+  if (user && user.email === "demo@fixtrack.app") {
+    btnSeed.textContent = `🚀 Reiniciando (${user.email})...`;
+    runSeed(); // Ejecutar automáticamente al detectar la sesión
+  } else {
+    // Si no está logueado, forzamos el login de demo
+    signInWithEmailAndPassword(auth, "demo@fixtrack.app", "demo1234").catch(err => {
+      log("Error al iniciar sesión automática: " + err.message, "error");
+    });
   }
 });
 </script>
-
 </body>
 </html>

@@ -4,6 +4,17 @@ service cloud.firestore {
 
     function isSignedIn() { return request.auth != null; }
 
+    // -------------------------
+    // CUENTA DEMO
+    // UID hardcodeado, solo puede operar sobre businessId "fixtrack-demo"
+    // -------------------------
+    function isDemoAccount() {
+      return request.auth != null && request.auth.uid == "ghTUpQmTdsNxiY4YTkkhuGJnHSG2";
+    }
+    function isDemoBusinessId(bid) {
+      return bid == "fixtrack-demo";
+    }
+
     // ---------- USERS (staff) ----------
     function userDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid));
@@ -29,7 +40,7 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/platformAdmins/$(request.auth.uid));
     }
 
-    // ---------- TRACKERS (separado) ----------
+    // ---------- TRACKERS ----------
     function trackerExists() {
       return isSignedIn() && exists(/databases/$(database)/documents/trackers/$(request.auth.uid));
     }
@@ -42,7 +53,7 @@ service cloud.firestore {
     function trackerBusinessId() { return trackerDoc().businessId; }
     function trackerDni() { return trackerDoc().dni; }
 
-    // ---------- JOIN CODES INDEX ----------
+    // ---------- JOIN CODES ----------
     function joinCodeExists(code) {
       return exists(/databases/$(database)/documents/joinCodes/$(code));
     }
@@ -59,7 +70,6 @@ service cloud.firestore {
         joinCodeData(code).role == role;
     }
 
-    // onboarding: user sin role/businessId
     function isFirstOnboarding() {
       return (
         (!("role" in resource.data) || resource.data.role == null) &&
@@ -68,7 +78,7 @@ service cloud.firestore {
     }
 
     // -------------------------
-    // PLATFORM ADMINS (solo consola)
+    // PLATFORM ADMINS
     // -------------------------
     match /platformAdmins/{uid} {
       allow get: if isSignedIn() && request.auth.uid == uid;
@@ -77,7 +87,7 @@ service cloud.firestore {
     }
 
     // -------------------------
-    // USERS (solo staff, no trackers)
+    // USERS
     // -------------------------
     match /users/{userId} {
 
@@ -87,33 +97,26 @@ service cloud.firestore {
         (isOwnerOrAdmin() && userBusinessId() == resource.data.businessId)
       );
 
-      // Create: doc básico sin role/businessId (bootstrap)
+      // Demo: puede escribir solo su propio doc de usuario
+      allow create, update: if isDemoAccount() && request.auth.uid == userId;
+
       allow create: if isSignedIn() && request.auth.uid == userId && (
         (!("role" in request.resource.data) && !("businessId" in request.resource.data))
       );
 
       allow update: if isSignedIn() && (
-        // 1) DEV puede todo
         isPlatformAdmin()
-
         ||
-
-        // 2) Self update (onboarding 1 vez + luego congelado)
         (
           request.auth.uid == userId &&
           (
-            // 2a) Primer onboarding
             (
               isFirstOnboarding() &&
               request.resource.data.businessId is string &&
               request.resource.data.role in ["owner","admin","tecnico"] &&
               (
-                // owner -> active
                 (request.resource.data.role == "owner" && request.resource.data.status == "active")
-
                 ||
-
-                // admin/tecnico -> pending con joinCode válido
                 (
                   request.resource.data.role in ["admin","tecnico"] &&
                   request.resource.data.joinCode is string &&
@@ -126,10 +129,7 @@ service cloud.firestore {
                 )
               )
             )
-
             ||
-
-            // 2b) Después del onboarding: congelar role/businessId/status
             (
               request.resource.data.role == resource.data.role &&
               request.resource.data.businessId == resource.data.businessId &&
@@ -137,10 +137,7 @@ service cloud.firestore {
             )
           )
         )
-
         ||
-
-        // 3) Owner/Admin pueden REVOCAR usuarios de su negocio (pero no activar)
         (
           isOwnerOrAdmin() &&
           userBusinessId() == resource.data.businessId &&
@@ -151,24 +148,13 @@ service cloud.firestore {
             request.resource.data.status == "revoked"
           )
         )
-
-        ||
-
-        // 4) Self-seed para cuenta demo: permite asignarse como owner de negocio demo
-        (
-          request.auth.uid == userId &&
-          request.resource.data.role == "owner" &&
-          request.resource.data.status == "active" &&
-          request.resource.data.businessId is string &&
-          request.resource.data.businessId.matches("fixtrack-demo-.*")
-        )
       );
 
       allow delete: if false;
     }
 
     // -------------------------
-    // TRACKERS (separados)
+    // TRACKERS
     // -------------------------
     match /trackers/{uid} {
       allow get: if isSignedIn() && (request.auth.uid == uid || isPlatformAdmin());
@@ -188,33 +174,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // ------------------------------------------------------------------
-    // USER SESSIONS (1 dispositivo a la vez)
-    // ------------------------------------------------------------------
+    // -------------------------
+    // USER SESSIONS
+    // -------------------------
     match /userSessions/{uid} {
       allow get: if isSignedIn() && (request.auth.uid == uid || isPlatformAdmin());
       allow list: if false;
 
       allow create: if isSignedIn() && request.auth.uid == uid &&
         request.resource.data.keys().hasOnly([
-          "activeDeviceId",
-          "activeDeviceLabel",
-          "activeAt",
-          "lastSeenAt",
-          "businessId",
-          "role"
+          "activeDeviceId","activeDeviceLabel","activeAt","lastSeenAt","businessId","role"
         ]) &&
         request.resource.data.activeDeviceId is string;
 
       allow update: if isSignedIn() && request.auth.uid == uid &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "activeDeviceId",
-          "activeDeviceLabel",
-          "activeAt",
-          "lastSeenAt",
-          "releasedAt",
-          "businessId",
-          "role"
+          "activeDeviceId","activeDeviceLabel","activeAt","lastSeenAt","releasedAt","businessId","role"
         ]) &&
         (
           request.resource.data.activeDeviceId is string ||
@@ -225,9 +200,13 @@ service cloud.firestore {
     }
 
     // -------------------------
-    // BUSINESSES (privado)
+    // BUSINESSES
     // -------------------------
     match /businesses/{businessId} {
+
+      // Demo: solo puede leer/escribir su propio negocio demo
+      allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
+
       allow read: if isPlatformAdmin() || (isActiveStaff() && userBusinessId() == businessId);
 
       allow create: if isSignedIn() &&
@@ -238,9 +217,13 @@ service cloud.firestore {
     }
 
     // -------------------------
-    // BUSINESSES PUBLIC (tracking)
+    // BUSINESSES PUBLIC
     // -------------------------
     match /businessesPublic/{businessId} {
+
+      // Demo: solo puede leer/escribir su propio negocio demo
+      allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
+
       allow get: if isSignedIn();
       allow list: if false;
 
@@ -256,6 +239,10 @@ service cloud.firestore {
     // BUSINESS RUNTIME
     // -------------------------
     match /businessRuntime/{businessId} {
+
+      // Demo: solo puede leer/escribir su propio negocio demo
+      allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
+
       allow get: if isSignedIn() && (
         isPlatformAdmin() ||
         (isActiveStaff() && userBusinessId() == businessId)
@@ -278,7 +265,7 @@ service cloud.firestore {
       ) &&
       request.resource.data.whatsappAutoEnabled is bool &&
       request.resource.data.updatedBy == request.auth.uid &&
-      (! ("createdBy" in request.resource.data) || request.resource.data.createdBy == request.auth.uid);
+      (!("createdBy" in request.resource.data) || request.resource.data.createdBy == request.auth.uid);
 
       allow update: if isSignedIn() && (
         isPlatformAdmin() ||
@@ -291,21 +278,43 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // -------------------------
+    // BUSINESS SECRETS
+    // -------------------------
     match /businessSecrets/{businessId} {
       allow read, write: if isPlatformAdmin();
     }
 
+    // -------------------------
+    // JOIN CODES
+    // -------------------------
     match /joinCodes/{code} {
       allow get: if isSignedIn();
       allow list: if false;
       allow create, update, delete: if isPlatformAdmin();
     }
 
+    // -------------------------
+    // COUNTERS
+    // -------------------------
     match /counters/{businessId} {
+      // Demo: solo su propio contador
+      allow read, write: if isDemoAccount() && isDemoBusinessId(businessId);
+
       allow read, write: if isActiveStaff() && userBusinessId() == businessId;
     }
 
+    // -------------------------
+    // CLIENTS
+    // -------------------------
     match /clients/{clientId} {
+
+      // Demo: solo clientes de su negocio demo
+      allow read, write: if isDemoAccount() &&
+        isDemoBusinessId(request.resource.data.businessId);
+
+      allow read: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
+
       allow read: if isSignedIn() && (
         (isActiveStaff() && userBusinessId() == resource.data.businessId) ||
         (isActiveTracker() &&
@@ -324,7 +333,17 @@ service cloud.firestore {
         userBusinessId() == resource.data.businessId;
     }
 
+    // -------------------------
+    // ORDERS
+    // -------------------------
     match /orders/{orderId} {
+
+      // Demo: solo órdenes de su negocio demo
+      allow read, write: if isDemoAccount() &&
+        isDemoBusinessId(request.resource.data.businessId);
+
+      allow read: if isDemoAccount() && isDemoBusinessId(resource.data.businessId);
+
       allow read: if isSignedIn() && (
         (isActiveStaff() && userBusinessId() == resource.data.businessId) ||
         (isActiveTracker() &&
