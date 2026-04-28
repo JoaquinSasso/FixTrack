@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description"
+      content="Sistema simple para servicios técnicos: órdenes, pendientes, comprobantes, WhatsApp en 1 clic, seguimiento para clientes y código de retiro." />
+    <title>Joa Sasso | Órdenes para Servicios Técnicos</title>
+
+    <style>
+    :root{
+      --bg:#0b1020;
+      --card:#0f1730;
+      --muted:#a7b0c3;
+      --text:#edf1ff;
+      --accent:#5eead4;
+      --accent2:#60a5fa;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius:18px;
+      --max:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 500px at 20% 10%, rgba(94,234,212,.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 15%, rgba(96,165,250,.18), transparent 55%),
+        linear-gradient(180deg, #070a14, var(--bg));
+      color:var(--text);
+      line-height:1.55;
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--max); margin:0 auto; padding:22px}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(7,10,20,.65);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar .row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; padding:14px 22px; max-width:var(--max); margin:0 auto;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px;}
+    .badge{
+      font-size:12px; color:#0b1020; background:linear-gradient(90deg, var(--accent), var(--accent2));
+      padding:4px 10px; border-radius:999px; font-weight:900;
+    }
+    nav{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+    nav a{font-size:14px; color:var(--muted); text-decoration:none}
+    nav a:hover{color:var(--text)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:10px;
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      text-decoration:none;
+      font-weight:800;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px); border-color:rgba(255,255,255,.18)}
+    .btn.primary{
+      background: linear-gradient(90deg, rgba(94,234,212,.18), rgba(96,165,250,.18));
+    }
+    .btn.solid{
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color:#0b1020;
+      border-color: rgba(255,255,255,.0);
+    }
+    .btn.small{padding:10px 12px; border-radius:12px; font-size:14px}
+
+    .hero{padding:56px 0 26px}
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap:22px;
+      align-items:start;
+    }
+    h1{
+      margin:0 0 12px;
+      font-size: clamp(30px, 3.6vw, 52px);
+      line-height:1.06;
+      letter-spacing:-.5px;
+    }
+    .lead{color:var(--muted); font-size: clamp(15px, 1.4vw, 18px); margin:0 0 18px}
+    .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:14px}
+    .micro{
+      margin-top:12px; color:var(--muted); font-size:13px;
+      display:flex; gap:12px; flex-wrap:wrap;
+    }
+    .pill{
+      border:1px solid var(--border); padding:7px 10px; border-radius:999px;
+      background: rgba(255,255,255,.04);
+    }
+    .card{
+      background: rgba(15,23,48,.70);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .card h3{margin:0 0 6px; font-size:16px}
+    .card p{margin:0; color:var(--muted); font-size:14px}
+    .kpis{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+    .kpi{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+    }
+    .kpi b{display:block; font-size:16px}
+    .kpi span{color:var(--muted); font-size:13px}
+
+    section{padding:26px 0}
+    .section-title{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+      margin-bottom:14px;
+    }
+    .section-title h2{margin:0; font-size:26px; letter-spacing:-.3px}
+    .section-title p{margin:0; color:var(--muted); max-width:64ch}
+
+    .grid-3{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+    .grid-2{display:grid; grid-template-columns: repeat(2, 1fr); gap:14px}
+
+    ul.clean{margin:10px 0 0; padding:0; list-style:none}
+    ul.clean li{margin:10px 0; color:var(--muted); font-size:14px}
+    ul.clean li b{color:var(--text)}
+
+    .feature{display:flex; gap:12px; align-items:flex-start}
+    .icon{
+      width:40px; height:40px; border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      flex:0 0 auto;
+    }
+    .icon svg{width:20px; height:20px; opacity:.92}
+    .note{margin-top:10px; color:var(--muted); font-size:15px;}
+
+    .steps{
+      display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+    }
+    .step{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+    }
+    .step .num{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:28px; height:28px; border-radius:999px;
+      background: rgba(94,234,212,.18);
+      border:1px solid rgba(94,234,212,.25);
+      font-weight:900;
+      color:var(--text);
+      margin-bottom:10px;
+    }
+    .step b{display:block; margin-bottom:6px}
+    .step p{margin:0; color:var(--muted); font-size:14px}
+
+    .pricing{
+      display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px;
+      align-items:stretch;
+    }
+    .price{position:relative; overflow:hidden;}
+    .price .tag{
+      position:absolute; top:14px; right:14px;
+      font-size:12px;
+      padding:5px 10px;
+      border-radius:999px;
+      background: rgba(94,234,212,.14);
+      border:1px solid rgba(94,234,212,.25);
+      color: var(--text);
+      font-weight:900;
+    }
+    .amount{font-size:34px; margin:6px 0 0; letter-spacing:-.5px}
+    .amount small{font-size:14px; color:var(--muted); font-weight:700}
+    .sep{height:1px; background:var(--border); margin:14px 0}
+
+    .faq-card{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px 14px;
+    }
+    .faq-q{font-weight:900; margin:0 0 8px}
+    .faq-a{margin:0; color:var(--muted); font-size:14px}
+
+    footer{
+      padding:30px 0 50px;
+      color:var(--muted);
+      border-top:1px solid var(--border);
+      margin-top:10px;
+    }
+    .footer-grid{
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; align-items:start;
+    }
+    .contact a{color:var(--text); text-decoration:none}
+    .contact a:hover{text-decoration:underline}
+    .tiny{font-size:12px; color:var(--muted); margin-top:10px}
+
+    @media (max-width: 920px){
+      .hero-grid{grid-template-columns: 1fr; }
+      .pricing{grid-template-columns: 1fr}
+      .grid-3{grid-template-columns: 1fr}
+      .grid-2{grid-template-columns: 1fr}
+      .steps{grid-template-columns:1fr}
+      nav{display:none}
+      .kpis{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 520px){
+      .kpis{grid-template-columns:1fr}
+      .topbar .row{padding:12px 16px}
+      .wrap{padding:16px}
+    }
+  </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="row">
+        <div class="brand">
+          <span>Joa Sasso</span>
+          <span class="badge">Software</span>
+        </div>
+        <nav>
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#que-incluye">Qué incluye</a>
+          <a href="#web">Landing web</a>
+          <a href="#planes">Planes</a>
+          <a href="#faq">Preguntas</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+        <a class="btn solid small"
+          href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20me%20interesa%20probar%20el%20sistema%20de%20%C3%B3rdenes%20para%20servicio%20t%C3%A9cnico.%20%C2%BFPueden%20activarme%20la%20prueba%20de%207%20d%C3%ADas%3F"
+          target="_blank" rel="noopener">
+          WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <main class="wrap">
+      <section class="hero" id="inicio">
+        <div class="hero-grid">
+          <div>
+            <h1>Dejá el cuaderno: ordená tus reparaciones y avisá por
+              WhatsApp</h1>
+            <p class="lead">
+              Esto es una herramienta para servicios técnicos. Sirve para
+              <b>anotar órdenes</b>, <b>ver pendientes</b>,
+              <b>imprimir comprobantes</b> y <b>avisar al cliente por
+                WhatsApp</b>.
+              Se usa desde el celular o la compu, y <b>no se pierde nada</b>.
+            </p>
+
+            <div class="cta">
+              <a class="btn solid"
+                href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20quiero%20activar%20la%20prueba%20gratis%20de%207%20d%C3%ADas%20del%20sistema%20de%20%C3%B3rdenes.%20Mi%20negocio%20es%3A%20_____"
+                target="_blank" rel="noopener">
+                Pedir demo por WhatsApp
+              </a>
+              <a class="btn primary" href="#planes">Ver planes</a>
+            </div>
+
+            <div class="micro">
+              <span class="pill">📱 Usalo desde el celular</span>
+              <span class="pill">💻 O desde la compu</span>
+              <span class="pill">🟢 WhatsApp en 1 clic</span>
+              <span class="pill">☁️ Todo en la nube</span>
+            </div>
+
+            <p class="note">
+              Basado en experiencia real de taller y atención al cliente.
+            </p>
+          </div>
+
+          <aside class="card">
+            <h3>¿Qué vas a notar en la primera semana?</h3>
+            <p>Menos desorden, menos mensajes repetidos y más “se ve
+              profesional”.</p>
+
+            <div class="kpis">
+              <div class="kpi">
+                <b>Órdenes claras</b>
+                <span>todo en un lugar</span>
+              </div>
+              <div class="kpi">
+                <b>Pendientes</b>
+                <span>para organizar el día</span>
+              </div>
+              <div class="kpi">
+                <b>Cliente informado</b>
+                <span>sin escribir de cero</span>
+              </div>
+              <div class="kpi">
+                <b>Entrega segura</b>
+                <span>código de retiro</span>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+            <a class="btn primary"
+              href="mailto:joasasso.dev@gmail.com?subject=Consulta%20-%20Sistema%20de%20%C3%93rdenes%20Joa%20Sasso&body=Hola%2C%20quiero%20info%20sobre%20el%20sistema%20de%20%C3%B3rdenes.%0A%0ANombre%20del%20negocio%3A%0ACiudad%3A%0A%0AGracias.">
+              Consultar por email
+            </a>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Cómo funciona (cero tech) -->
+      <section id="como-funciona">
+        <div class="section-title">
+          <h2>Cómo funciona (en 30 segundos)</h2>
+          <p>Sin palabras raras. Así de simple.</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <b>Entrás y cargás la orden</b>
+            <p>Cliente, equipo y qué le pasa. Queda guardado.</p>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <b>Ves tus pendientes</b>
+            <p>Una lista para saber qué reparar primero.</p>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <b>Avisás por WhatsApp</b>
+            <p>Con 1 clic: “listo”, “en reparación”, “podés pasar a
+              retirar”.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>¿Y si el cliente manda a otra persona a retirar?</h3>
+          <p>
+            Generás un <b>código</b> y se lo enviás al cliente. Si quien retira
+            no tiene el código, no se entrega.
+            Simple y seguro.
+          </p>
+        </div>
+      </section>
+
+      <!-- Qué incluye -->
+      <section id="que-incluye">
+        <div class="section-title">
+          <h2>Qué incluye el sistema</h2>
+          <p>Todo lo que necesitás para el manejo de órdenes, sin
+            complicarte.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="feature">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div>
+                <h3>Órdenes completas</h3>
+                <p>Datos del cliente y del equipo, con estado de la
+                  reparación.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="feature">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2v4M12 18v4M4 12H2M22 12h-2"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <path d="M7 17l-2 2M19 5l-2 2M7 7 5 5M19 19l-2-2"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                </svg>
+              </div>
+              <div>
+                <h3>Lista de pendientes</h3>
+                <p>Para organizar el trabajo y no olvidarte órdenes.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="feature">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7h10v10H7z" stroke="currentColor"
+                    stroke-width="2" />
+                  <path d="M4 4h4v4H4zM16 4h4v4h-4zM4 16h4v4H4zM16 16h4v4h-4z"
+                    stroke="currentColor" stroke-width="2" />
+                </svg>
+              </div>
+              <div>
+                <h3>QR por orden</h3>
+                <p>Escaneás y se abre WhatsApp con el chat del cliente
+                  listo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px">
+          <div class="card">
+            <div class="feature">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M6 9V4h12v5" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <path d="M6 14H5a3 3 0 0 1 0-6h14a3 3 0 1 1 0 6h-1"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <path d="M7 14h10v6H7z" stroke="currentColor"
+                    stroke-width="2" />
+                </svg>
+              </div>
+              <div>
+                <h3>Comprobantes para imprimir</h3>
+                <p>Recepción y entrega. Para que quede todo claro.</p>
+                <p class="note">“Me firmás acá y listo” (sin discusiones).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="feature">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3a7 7 0 0 0-7 7v4l-2 3h18l-2-3v-4a7 7 0 0 0-7-7Z"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linejoin="round" />
+                  <path d="M9.5 20a2.5 2.5 0 0 0 5 0" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div>
+                <h3>Avisos por WhatsApp</h3>
+                <p>Mensajes listos para enviar con un solo clic.</p>
+                <p class="note">Puede quedar automático o “a mano”, como
+                  prefieras.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px">
+          <div class="card">
+            <h3>Seguimiento para el cliente</h3>
+            <p>El cliente recibe un enlace y ve el estado de su orden cuando
+              quiera.</p>
+            <ul class="clean">
+              <li><b>Menos</b> mensajes preguntando</li>
+              <li><b>Más</b> tranquilidad y confianza</li>
+              <li><b>Mejor</b> imagen del negocio</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Ingreso fácil</h3>
+            <p>Podés entrar con tu cuenta de Google (como cuando abrís Gmail o
+              YouTube).</p>
+            <ul class="clean">
+              <li><b>Más rápido</b> para arrancar</li>
+              <li><b>Menos</b> contraseñas para recordar</li>
+              <li><b>Más</b> práctico para el día a día</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>Importante</h3>
+          <p><b>No incluye facturación</b> por ahora. El foco es que el sistema
+            de órdenes sea simple y funcione perfecto.</p>
+        </div>
+      </section>
+
+            <!-- Planes (solo sistema de órdenes) -->
+      <section id="planes">
+        <div class="section-title">
+          <h2>Planes del sistema de órdenes</h2>
+          <p>Suscripción mensual. La landing/hosting se contrata por separado.</p>
+        </div>
+
+        <div class="pricing">
+          <div class="card price">
+            <div class="tag">Prueba</div>
+            <h3>Demo + prueba</h3>
+            <p>Te lo activamos para que lo uses con órdenes reales. En semanas con feriados, ajustamos la prueba para que puedas usarlo en días de trabajo.</p>
+            <div class="amount">Gratis <small>/ sin compromiso</small></div>
+            <div class="sep"></div>
+            <ul class="clean">
+              <li><b>Acceso completo</b> al sistema</li>
+              <li><b>Ayuda</b> para arrancar</li>
+              <li><b>Soporte</b> por WhatsApp</li>
+              <li><b>Sin tarjeta</b></li>
+            </ul>
+            <div class="sep"></div>
+            <a class="btn solid"
+              href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20quiero%20ver%20una%20demo%20del%20sistema%20de%20%C3%B3rdenes%20para%20servicio%20t%C3%A9cnico.%0A%0ANegocio%3A%20_____%0ACiudad%3A%20_____%0ACantidad%20de%20t%C3%A9cnicos%3A%20_____%0ARubro%3A%20(PC%2Fcelulares%2Fimpresoras%2Fetc)%20_____"
+              target="_blank" rel="noopener">
+              Pedir demo por WhatsApp
+            </a>
+          </div>
+
+          <div class="card price">
+            <div class="tag">Para arrancar</div>
+            <h3>Plan Base</h3>
+            <p>Para llevar órdenes y avisos de forma profesional. Ideal si lo usa una persona a la vez.</p>
+            <div class="amount">$19.900 <small>/ mes</small></div>
+            <div class="sep"></div>
+            <ul class="clean">
+              <li><b>Órdenes</b> + pendientes</li>
+              <li><b>WhatsApp</b> en 1 clic + QR por orden</li>
+              <li><b>Comprobantes</b> imprimibles</li>
+              <li><b>Seguimiento</b> para el cliente</li>
+              <li><b>Código</b> para validar retiro</li>
+              <li><b>1 usuario</b> simultáneo incluido</li>
+            </ul>
+            <div class="sep"></div>
+            <a class="btn solid"
+              href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20me%20interesa%20el%20Plan%20Base%20($19.900%2Fmes).%20%C2%BFMe%20cont%C3%A1s%20c%C3%B3mo%20arrancamos%3F"
+              target="_blank" rel="noopener">
+              Consultar Plan Base
+            </a>
+            <p class="tiny">Usuarios extra (opcional): $9.900/mes c/u.</p>
+          </div>
+
+          <div class="card price">
+            <div class="tag">Más elegido</div>
+            <h3>Plan Pro</h3>
+            <p>Para talleres con equipo: más usuarios simultáneos y soporte de puesta en marcha.</p>
+            <div class="amount">$39.900 <small>/ mes</small></div>
+            <div class="sep"></div>
+            <ul class="clean">
+              <li><b>Todo el Plan Base</b></li>
+              <li><b>3 usuarios</b> simultáneos incluidos</li>
+              <li><b>Soporte</b> de puesta en marcha</li>
+              <li><b>Capacitación</b> inicial por Videollamada</li>
+              <li><b>Prioridad</b> en soporte por WhatsApp</li>
+            </ul>
+            <div class="sep"></div>
+            <a class="btn solid"
+              href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20me%20interesa%20el%20Plan%20Pro%20($39.900%2Fmes%20-%203%20usuarios).%20%C2%BFMe%20pas%C3%A1s%20detalles%3F"
+              target="_blank" rel="noopener">
+              Consultar Plan Pro
+            </a>
+            <p class="tiny">Usuarios extra (opcional): $9.900/mes c/u.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>¿Querés también página web?</h3>
+          <p>La landing y el hosting se contratan aparte. Mirá los detalles en la sección <a href="#web"><b>Landing + hosting</b></a>.</p>
+        </div>
+      </section>
+      
+      <!-- Web / Landing (separado del sistema) -->
+      <section id="web">
+        <div class="section-title">
+          <h2>Landing + hosting (opcional)</h2>
+          <p>Una página simple para que te encuentren, te escriban y confíen. Este servicio es <b>independiente</b> del sistema de órdenes.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Alta de landing (pago único)</h3>
+            <p>Armamos una página clara con lo esencial del negocio, lista para compartir.</p>
+            <div class="amount">$50.000 <small>/ alta única</small></div>
+            <div class="sep"></div>
+            <ul class="clean">
+              <li><b>Botón de WhatsApp</b> para contacto</li>
+              <li><b>Mapa</b> + dirección</li>
+              <li><b>Horarios</b> y redes</li>
+              <li><b>Servicios</b> (y precios si querés)</li>
+            </ul>
+            <p class="tiny">Entrega típica: 48–72 hs (según material).</p>
+          </div>
+
+          <div class="card">
+            <h3>Hosting + mantenimiento (mensual)</h3>
+            <p>Para que la web esté online, rápida y con cambios chicos incluidos.</p>
+            <div class="amount">$20.000 <small>/ mes</small></div>
+            <div class="sep"></div>
+            <ul class="clean">
+              <li><b>Hosting</b> + SSL</li>
+              <li><b>Soporte</b> por WhatsApp</li>
+              <li><b>Hasta 2 cambios</b> chicos por mes</li>
+              <li><b>Monitoreo</b> básico</li>
+            </ul>
+            <p class="tiny">Cambios grandes o rediseño: se cotiza aparte.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>Dominio propio (opcional)</h3>
+          <p>Si querés algo como <b>tunegocio.com.ar</b>, se paga aparte (dominio + gestión). Te lo dejo configurado.</p>
+        </div>
+      </section>
+
+<!-- FAQ (siempre visible) -->
+      <section id="faq">
+        <div class="section-title">
+          <h2>Preguntas frecuentes</h2>
+          <p>Respuestas claras, sin tecnicismos.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="faq-card">
+            <p class="faq-q">¿Tengo que instalar algo?</p>
+            <p class="faq-a">No. Te damos un enlace y entrás. Como cuando abrís
+              WhatsApp Web: abrís y usás.</p>
+          </div>
+
+          <div class="faq-card">
+            <p class="faq-q">¿Puedo usarlo desde el celular y la compu?</p>
+            <p class="faq-a">Sí. Podés usarlo desde cualquier dispositivo
+              (celular, notebook, PC).</p>
+          </div>
+
+          <div class="faq-card">
+            <p class="faq-q">¿Cómo aviso al cliente?</p>
+            <p class="faq-a">Con 1 clic se abre WhatsApp con el mensaje listo.
+              Además, cada orden tiene un QR para abrir el chat rápido.</p>
+          </div>
+
+          <div class="faq-card">
+            <p class="faq-q">¿El cliente puede ver el estado?</p>
+            <p class="faq-a">Sí. Le llega un enlace y puede mirar “en
+              reparación”, “listo”, etc., sin preguntarte.</p>
+          </div>
+
+          <div class="faq-card">
+            <p class="faq-q">¿Cómo evito entregar a cualquiera?</p>
+            <p class="faq-a">El sistema genera un código. Si quien retira no
+              tiene el código, no se entrega.</p>
+          </div>
+
+          <div class="faq-card">
+            <p class="faq-q">¿Incluye facturación?</p>
+            <p class="faq-a">Todavía no. Hoy está pensado para órdenes y
+              organización (simple y robusto).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA final -->
+      <section id="contacto">
+        <div class="card" style="padding:20px">
+          <div class="grid-2" style="align-items:center">
+            <div>
+              <h2 style="margin:0 0 6px; font-size:26px">¿Querés que te lo
+                activemos hoy?</h2>
+              <p style="margin:0; color:var(--muted)">
+                Te ayudamos a arrancar y cargar las primeras órdenes. La idea es
+                que lo uses con tu trabajo real.
+              </p>
+              <div class="cta" style="margin-top:14px">
+                <a class="btn solid"
+                  href="https://wa.me/5492645288667?text=Hola%20Joa%2C%20quiero%20activar%20la%20prueba%20de%207%20d%C3%ADas%20del%20sistema%20de%20%C3%B3rdenes.%20Mi%20negocio%20es%3A%20_____"
+                  target="_blank" rel="noopener">
+                  Pedir demo por WhatsApp
+                </a>
+                <a class="btn primary" href="./st/admin-login.html">
+                  Probar ahora
+                </a>
+              </div>
+            </div>
+
+            <div class="card"
+              style="background: rgba(255,255,255,.04); box-shadow:none">
+              <h3 style="margin:0 0 10px">Contacto</h3>
+              <div class="contact" style="display:grid; gap:8px">
+                <div><b>WhatsApp:</b> <a href="https://wa.me/5492645288667"
+                    target="_blank" rel="noopener">+54 9 264 528-8667</a></div>
+                <div><b>Email:</b> <a
+                    href="mailto:joasasso.dev@gmail.com">joasasso.dev@gmail.com</a></div>
+                <div><b>Instagram: </b><a href="https://www.instagram.com/joasasso.dev" target="_blank" rel="noopener">@joasasso.dev</a></div>
+              </div></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="footer-grid">
+          <div>
+            <b style="color:var(--text)">Joaquín Sasso</b>
+            <p style="margin:8px 0 0">
+              Órdenes para servicios técnicos: pendientes, comprobantes,
+              WhatsApp y entrega segura.
+            </p>
+            <p class="tiny">
+              Nota: Este sitio es informativo. Los precios y funcionalidades
+              pueden ajustarse con el tiempo.
+            </p>
+          </div>
+
+          <div>
+            <b style="color:var(--text)">Atención</b>
+            <p style="margin:8px 0 0">
+              Horarios recomendados para contacto: Lunes a viernes, 10:00 a
+              12:00 y 16:00 a 18:30.
+            </p>
+            <p class="tiny">
+              Si estás fuera de horario, dejá tu mensaje y te respondemos lo
+              antes posible.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>
