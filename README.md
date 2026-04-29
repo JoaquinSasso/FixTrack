@@ -1,69 +1,89 @@
-# FixTrack SaaS 🛠️
-### Plataforma de Gestión Técnica con Arquitectura Multi-inquilino
+# FixTrack 🛠️
+### Sistema de Gestión Técnica SaaS Multi-tenant
 
-**FixTrack** es una solución profesional diseñada para escalar el flujo de trabajo de servicios técnicos y talleres. No es solo un gestor de órdenes; es un sistema **SaaS completo** que permite a múltiples negocios operar de forma aislada bajo una arquitectura robusta, segura y centrada en el rendimiento.
+**FixTrack** es un sistema de gestión para talleres y servicios técnicos construido como SaaS multi-tenant. Opera en producción desde noviembre 2024, gestionando el flujo completo de un taller de servicios técnicos en San Juan, Argentina.
+
+El sistema reemplazó un software legacy de 15 años tras dos meses de levantamiento de requerimientos con los técnicos del taller e iteración continua con feedback de usuarios finales.
+
+**Nota sobre este repositorio:** Este repo público es un mirror del repositorio privado principal (100+ commits) creado tras limpiar credenciales sensibles y configuración específica del cliente. Muestra la arquitectura y decisiones técnicas sin exponer datos operacionales.
 
 ---
 
-## 🚀 Portafolio: Aspectos Técnicos Destacados
+## 🚀 Aspectos Técnicos Principales
 
-Este proyecto demuestra competencias de nivel avanzado en desarrollo Full-Stack y Arquitectura de Software:
+### 1. Arquitectura Multi-tenant con RBAC
 
-### 1. Seguridad Avanzada y Multi-tenancy (RBAC)
-A diferencia de proyectos educativos, FixTrack implementa un aislamiento de datos estricto mediante **Firestore Security Rules** dinámicas.
-- **Logro:** El backend valida en cada petición si el usuario pertenece al `businessId` del recurso solicitado y si su rol (`owner`, `admin`, `tecnico`) le permite realizar la acción.
-- **Evidencia:** Revisa `firestore.rules` para ver la implementación de funciones como `isActiveStaff()` y `isPlatformAdmin()`.
+El sistema implementa aislamiento estricto de datos por negocio mediante **Firestore Security Rules dinámicas**.
 
-### 2. Estrategia de Rendimiento: Cache-First UI
-Para garantizar una experiencia de usuario fluida, se implementó una lógica de carga híbrida.
-- **Logro:** Uso de `getDocsFromCache` en combinación con `onSnapshot` para renderizar datos en menos de 50ms, sincronizando cambios en tiempo real sin bloquear la interfaz.
-- **Evidencia:** Implementado en `js/core/ordersRepo.js`.
+- El backend valida en cada petición que el usuario pertenece al `businessId` del recurso y que su rol (`owner`, `admin`, `technician`) le permite realizar la operación.
+- La lógica de permisos está centralizada en funciones como `isActiveStaff()` y `isPlatformAdmin()` (ver `firestore.rules`).
 
-### 3. Gestión de Sesiones Exclusivas
-Se desarrolló un sistema para rastrear dispositivos activos y evitar el uso compartido de cuentas no autorizado.
-- **Logro:** El módulo `exclusive-device-session.js` rastrea el `activeDeviceId`, permitiendo un control granular de la actividad por negocio.
+### 2. Optimización de Renderizado: Cache-First
 
-### 4. Motor de Mensajería y Plantillas Dinámicas
-- **Logro:** Un motor basado en **Regex** que inyecta variables de negocio (`NOMBRE_CLIENTE`, `NUMERO_ORDEN`, `LINK_SEGUIMIENTO`) en plantillas personalizables para WhatsApp.
-- **Evidencia:** Lógica centralizada en `js/pages/orderDetails/whatsapp.js`.
+Implementé una estrategia de carga híbrida para garantizar tiempos de respuesta inferiores a 50ms en listas de órdenes.
+
+- Combinación de `getDocsFromCache()` + `onSnapshot()` de Firestore: los datos se muestran inmediatamente desde cache local mientras se sincronizan cambios en tiempo real en segundo plano.
+- Implementado en `js/core/ordersRepo.js`.
+
+### 3. Motor de Plantillas para WhatsApp API
+
+Desarrollé un sistema de notificaciones automatizadas que reemplazó un cuello de botella operativo: antes los técnicos debían copiar manualmente el número del cliente en un teléfono compartido para notificar vía WhatsApp.
+
+- El motor inyecta variables dinámicas (`NOMBRE_CLIENTE`, `NUMERO_ORDEN`, `LINK_SEGUIMIENTO`) en plantillas personalizables.
+- Implementado con Regex en `js/pages/orderDetails/whatsapp.js`.
+
+### 4. Gestión de Sesiones por Dispositivo
+
+Sistema de tracking de dispositivos activos para evitar uso compartido de cuentas no autorizado.
+
+- El módulo `exclusive-device-session.js` rastrea el `activeDeviceId` por negocio, permitiendo control granular de acceso.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-- **Frontend:** HTML5, CSS3, JavaScript Moderno (Módulos ES6).
-- **Backend:** Firebase (Firestore, Authentication, Hosting).
-- **Arquitectura:** Patrón Repositorio para el desacoplamiento de la lógica de datos y la UI.
-- **Herramientas:** Integración con la API de WhatsApp Web.
+- **Frontend:** JavaScript ES6 Modules, HTML5, CSS3
+- **Backend:** Firebase (Firestore, Authentication, Functions, Hosting)
+- **Arquitectura:** Patrón Repositorio para desacoplar lógica de datos de UI
 
 ---
 
 ## 📁 Estructura del Proyecto
 
-- `core/`: Repositorios de datos (`ordersRepo.js`, `clientsRepo.js`) y lógica de negocio compartida.
-- `pages/`: Controladores específicos para cada vista de la aplicación.
-- `userSessions/`: Lógica de integridad de sesión por dispositivo.
-- `firestore.rules`: El "firewall" lógico de la aplicación.
+```
+public/
+├── st/js/
+│   ├── core/              # Repositorios (ordersRepo, clientsRepo)
+│   ├── pages/             # Controladores por vista
+│   ├── userSessions/      # Lógica de sesiones por dispositivo
+│   └── firebase.js        # Configuración Firebase
+├── firestore.rules        # Security Rules (RBAC)
+```
 
 ---
 
 ## 🔧 Instalación
 
-1. Clonar el repositorio.
-2. Configurar el objeto `firebaseConfig` en `public/st/js/firebase.js`.
-3. Desplegar las reglas de seguridad: `firebase deploy --only firestore:rules`.
-4. Iniciar mediante un servidor local o Firebase Hosting.
+1. Clonar el repositorio
+2. Configurar `firebaseConfig` en `public/st/js/firebase.js`
+3. Desplegar reglas de seguridad: `firebase deploy --only firestore:rules`
+4. Iniciar con servidor local o Firebase Hosting
+
+---
+
+## 📊 Métricas Operacionales
+
+- En producción desde noviembre 2024
+- +1.300 órdenes procesadas
+- Uso diario en operación real
 
 ---
 
 ## 🧑‍💻 Autor
 
-**Joaquín Sasso**
-*Estudiante de Ciencias de la Computación (UNSJ) & Desarrollador Android/Full-Stack*
+**Joaquín Sasso**  
+Estudiante de Ciencias de la Computación (UNSJ) | Desarrollador Android & Web
 
-- **LinkedIn:** [linkedin.com/in/joasasso](https://www.linkedin.com/in/joasasso/)
+- **LinkedIn:** [linkedin.com/in/joaquinsasso](https://www.linkedin.com/in/joaquinsasso/)
 - **GitHub:** [@JoaquinSasso](https://github.com/JoaquinSasso)
-- **Mi App en Play Store:** [MiniToolbox](https://play.google.com/store/apps/details?id=com.joasasso.minitoolbox)
-
----
-*"Software de calidad: donde la arquitectura y el rendimiento se encuentran."*
+- **MiniToolbox en Play Store:** [5,0/5 con 23 reseñas](https://play.google.com/store/apps/details?id=com.joasasso.minitoolbox)
