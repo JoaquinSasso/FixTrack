@@ -84,6 +84,6 @@ public/
 **Joaquín Sasso**  
 Estudiante de Ciencias de la Computación (UNSJ) | Desarrollador Android & Web
 
-- **LinkedIn:** [linkedin.com/in/joaquinsasso](https://www.linkedin.com/in/joaquinsasso/)
+- **LinkedIn:** [linkedin.com/in/joaquinsasso](https://www.linkedin.com/in/joasasso/)
 - **GitHub:** [@JoaquinSasso](https://github.com/JoaquinSasso)
 - **MiniToolbox en Play Store:** [5,0/5 con 23 reseñas](https://play.google.com/store/apps/details?id=com.joasasso.minitoolbox)
